@@ -2,10 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6183982600623454"
-     crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>부동산 & 금융 스마트 가이드 허브</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* 정부24 및 금융위원회 정책 포털 스타일의 네이비/블루 아이덴티티 */
         :root {
@@ -39,6 +38,29 @@
         .hub-container {
             max-width: 1000px;
             margin: 0 auto;
+            position: relative;
+        }
+
+        /* 상단 인스타그램 링크 스타일 */
+        .instagram-top-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #e1306c; /* 인스타그램 시그니처 컬러 */
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: opacity 0.2s ease;
+        }
+
+        .instagram-top-link:hover {
+            opacity: 0.8;
+        }
+
+        .instagram-top-link i {
+            font-size: 18px;
         }
 
         /* 헤더 영역 */
@@ -199,6 +221,16 @@
             color: #94a3b8;
             border-top: 1px solid var(--border-color);
             padding-top: 20px;
+        }
+
+        /* 데스크톱 화면에서 인스타그램 링크를 오른쪽 상단으로 배치 */
+        @media (min-width: 768px) {
+            .instagram-top-link {
+                position: absolute;
+                top: -30px;
+                right: 10px;
+                margin-bottom: 0;
+            }
         }
     </style>
 </head>
