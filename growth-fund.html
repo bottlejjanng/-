@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>국민성장펀드 핵심 가이드 요약</title>
+    <style>
+        /* 정부24 및 금융위원회 정책 안내서 스타일의 신뢰감 있는 화이트/네이비 디자인 */
+        :root {
+            --bg-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-main: #222222;
+            --text-desc: #555555;
+            --border-color: #cccccc;
+            --point-blue: #1e3a8a;
+            --point-blue-light: #eff6ff;
+            --point-blue-border: #bfdbfe;
+            --point-sky: #3b82f6;
+            --table-header: #f8fafc;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --warning-bg: #fef2f2;
+            --warning-border: #fca5a5;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --success-color: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .notion-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 메인 타이틀 */
+        .main-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--point-blue);
+            line-height: 1.4;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--point-blue);
+            padding-bottom: 15px;
+        }
+
+        /* 대단원 섹션 */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--point-blue);
+            margin: 36px 0 14px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sub-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--point-sky);
+            margin: 20px 0 8px 0;
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--text-main);
+            margin-bottom: 14px;
+        }
+
+        .bold-text {
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        /* 정책 기능 리스트 */
+        .policy-list {
+            list-style: none;
+            font-size: 14.5px;
+            color: #2d3748;
+            margin-bottom: 16px;
+        }
+
+        .policy-list li {
+            margin-bottom: 12px;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .policy-list li::before {
+            content: "▪";
+            position: absolute;
+            left: 2px;
+            color: var(--point-sky);
+        }
+
+        /* 3대 핵심 혜택 카드 블록 */
+        .benefit-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .benefit-card {
+            background-color: var(--point-blue-light);
+            border: 1px solid var(--point-blue-border);
+            border-left: 4px solid var(--point-sky);
+            padding: 16px;
+            border-radius: 4px;
+        }
+
+        .benefit-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--point-blue);
+            margin-bottom: 4px;
+        }
+
+        .benefit-desc {
+            font-size: 13.5px;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* 데이터 테이블 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13.5px;
+            text-align: center;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 8px;
+        }
+
+        .data-table th {
+            background-color: var(--table-header);
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .data-table td:first-child {
+            background-color: #fbfbfb;
+            font-weight: 600;
+        }
+
+        /* 전용계좌 발급 필수 조건 체크리스트 */
+        .check-list {
+            list-style: none;
+            font-size: 14.5px;
+            color: #2d3748;
+            background-color: #f8fafc;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .check-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .check-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .check-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 2px;
+            color: var(--point-sky);
+            font-weight: bold;
+        }
+
+        /* 추천 대상 타겟 박스 */
+        .target-box {
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+            border-left: 4px solid var(--success-color);
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .target-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 6px;
+        }
+
+        /* 🚨 주의사항 섹션 */
+        .warning-section {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-left: 4px solid var(--accent-red);
+            padding: 18px;
+            margin-top: 32px;
+            border-radius: 4px;
+        }
+
+        .warning-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-red);
+            margin-bottom: 10px;
+        }
+
+        .warning-list {
+            list-style: none;
+            font-size: 13.5px;
+            color: #2d3748;
+        }
+
+        .warning-list li {
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+        .warning-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .warning-list li::before {
+            content: "•";
+            position: absolute;
+            left: 2px;
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        /* 하단 카피 및 안내 */
+        .footer-info {
+            font-size: 13px;
+            color: var(--text-desc);
+            background-color: #edf2f7;
+            padding: 14px;
+            line-height: 1.6;
+            margin-top: 32px;
+            text-align: center;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="notion-container">
+    <!-- 메인 타이틀 -->
+    <h1 class="main-title">📄 국민성장펀드 핵심 가이드 요약</h1>
+
+    <!-- 섹션 1 -->
+    <h2 class="section-title">1. 💵 국민성장펀드란? (정책금융)</h2>
+    <ul class="policy-list">
+        <li><span class="bold-text">시장실패 교정 및 마중물 역량:</span> 민간 금융권에서 위험성이 높거나 정보 부족으로 선뜻 투자하기 힘든 첨단전략산업 분야에 정책금융기관이 자금을 보완·공급함으로써, 민간 자본의 자발적인 순환이 정상 작동하도록 마중물 역할을 수행합니다.</li>
+        <li><span class="bold-text">정책 지원 효과 극대화:</span> 첨단전략산업기금과 재정 자금을 핵심 기반으로 삼아 대규모 민간 자본 유치를 유도하고, 산업 전반의 파급효과가 큰 메가프로젝트를 중심으로 자금을 집중 공급합니다.</li>
+        <li><span class="bold-text">미래 동력의 선제적 준비:</span> 고위험·장기 투자가 요구되어 선제적 집행이 어려운 영역을 적극 지원하여 향후 20년의 대한민국 혁신 성장동력을 설계하는 적극적인 정책금융 인프라입니다.</li>
+    </ul>
+
+    <!-- 섹션 2 -->
+    <h2 class="section-title">2. 💰 핵심 3가지 혜택 (투자자 강점)</h2>
+    <div class="benefit-grid">
+        <div class="benefit-card">
+            <div class="benefit-title">📈 파격적인 세제 소득공제 혜택</div>
+            <div class="benefit-desc">투자 금액 구간별로 <span class="bold-text" style="color:var(--accent-orange);">최대 40%</span>의 차등 소득공제 혜택을 적용받아 강력한 절세 버퍼를 확보할 수 있습니다.</div>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-title">🛡️ 한도 내 원금 손실 보방 메커니즘</div>
+            <div class="benefit-desc">정부 재정과 정책금융기관이 <span class="bold-text" style="color:var(--point-blue);">약 20% 수준의 손실을 후순위 출자로 먼저 부담</span>합니다. 자산가치 하락 리스크 발생 시 일반 국민(선순위 투자자)의 원금 손실 가능성을 획기적으로 방어합니다.</div>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-title">💸 배당소득 저율 분리과세 적용</div>
+            <div class="benefit-desc">펀드 운용 및 유지 기간 중 발생하는 배당소득에 대하여 일반 금융소득 세율(15.4%)보다 현저히 낮은 <span class="bold-text" style="color:var(--success-color);">9% 저율 분리과세</span>(5년 이내 유지 요건, 2억 원 한도)가 부여됩니다.</div>
+        </div>
+    </div>
+
+    <!-- 섹션 3 -->
+    <h2 class="section-title">3. 📈 투자 금액별 소득공제 비율</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>연간 납입 금액 구간</th>
+                <th>소득공제 반영 비율</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>3,000만 원 이하 납입액</td>
+                <td style="font-weight: 700; color: var(--point-sky);">40% 소득공제</td>
+            </tr>
+            <tr>
+                <td>3,000만 원 초과 ~ 5,000만 원 이하 납입액</td>
+                <td>20% 소득공제</td>
+            </tr>
+            <tr>
+                <td>5,000만 원 초과 ~ 7,000만 원 이하 납입액</td>
+                <td>10% 소득공제</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 섹션 4 -->
+    <h2 class="section-title">4. 🧮 주요 과세표준별 예상 절세 금액 (최대 공제 기준)</h2>
+    <p style="font-size: 13.5px; color: var(--text-desc); margin-bottom: 8px;">※ 개인별 종합소득세 지방소득세 10% 합산 세액 환급 반영 기준 수치입니다.</p>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>나의 종합소득 과세표준 구간</th>
+                <th>적용 한도 세율</th>
+                <th>최대 기준 예상 환급액</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1,400만 원 초과 ~ 5,000만 원 이하</td>
+                <td>15%</td>
+                <td style="font-weight: 700; color: var(--success-color);">약 1,980,000원 환급</td>
+            </tr>
+            <tr>
+                <td>5,000만 원 초과 ~ 8,800만 원 이하</td>
+                <td>24%</td>
+                <td style="font-weight: 700; color: var(--success-color);">약 3,168,000원 환급</td>
+            </tr>
+            <tr>
+                <td>8,800만 원 초과 ~ 1억 5,000만 원 이하</td>
+                <td>35%</td>
+                <td style="font-weight: 700; color: var(--success-color);">약 4,620,000원 환급</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 섹션 5 -->
+    <h2 class="section-title">5. 🚨 전용계좌 발급 필수 조건 (세제지원 요건)</h2>
+    <p>아래 가입 적격 요건을 모두 충족해야만 정상적인 전용 계좌 개설 및 소득공제 처리가 지원됩니다.</p>
+    <ul class="check-list">
+        <li>만 19세 이상의 성인 가입자 또는 만 15세 이상의 근로소득 확인 가능자</li>
+        <li>정부 허가 금융사를 통한 <b>'국민참여형 국민성장펀드 전용 세제 계좌'</b>를 지정하여 신규 가입</li>
+        <li>직전 3개 과세기간(3개개년) 중 최소 1회 이상 <b>금융소득종합과세 대상자</b>에 해당하지 않을 것</li>
+        <li>가입 후 계약 유지 기간을 <b>최소 3년 이상</b> 조건으로 유지 및 거치할 것</li>
+    </ul>
+
+    <!-- 섹션 6 -->
+    <h2 class="section-title">6. 🎯 이런 분들께 적극 추천합니다!</h2>
+    <div class="target-box">
+        <div class="target-title">💰 5년 내 중단기 자금 인출 계획이 없는 장기 여유자금 운용자</div>
+        <p style="font-size: 13.5px; color: #2d3748; margin-bottom: 12px; line-height: 1.6;">
+            본 상품은 중도 환매가 엄격히 제한되며 최종 만기가 5년으로 고정된 <b>일시납 폐쇄형 자산 운용 구조</b>를 가집니다. 따라서 운용 기간 동안 유동성이 제한되어도 재무 흐름에 타격이 없는 순수 여유 운용 자산 비중으로 투자가 가능한 고객에게 적합합니다.
+        </p>
+        <div class="target-title">📑 국세청 '기타 소득공제 한도액'에 잔여 여유 한도가 풍부한 근로자</div>
+        <p style="font-size: 13.5px; color: #2d3748; margin-bottom: 0; line-height: 1.6;">
+            본 펀드가 제공하는 소득공제 한도는 <span class="bold-text">연 2,500만 원 규정의 국세청 소득공제 종합 한도</span> 내에 합산 적용됩니다. 만약 이미 기존 장기주택청약, IRP(퇴직연금), 과도한 신용카드 공제 등으로 통합 한도를 전액 채운 분이라면 추가 환급 실익이 발생하지 않을 수 있습니다. 소득공제 잔여 버퍼가 여유 있게 남아 있어 세제 절세 효과를 100% 누릴 수 있는 고소득 근로자에게 가장 강력합니다.
+        </p>
+    </div>
+
+    <!-- 섹션 7 -->
+    <h2 class="section-title">7. ⚠️ 투자자 주의사항 (유동성 및 위험도)</h2>
+    <div class="warning-section">
+        <div class="warning-title">🚨 금융 투자 실행 전 위험 고지 및 필수 인지 사항</div>
+        <ul class="warning-list">
+            <li><b>환매 제한 리스크 및 유동성 동결:</b> 신규 개설 이후 추가 납입 및 중도 환매가 원칙적으로 불가하므로, 만기(5년)까지 자금이 전면 묶이게 됩니다. 단기 및 긴급 생활 자금 예치는 절대로 금물입니다.</li>
+            <li><b>투자위험도 1등급 고위험 자산군:</b> 정부 및 정책기관의 20% 선순위 손실 보강 장치가 설계되어 있으나, 투자 대상 파트너들이 혁신전략 기술 벤처 및 성장형 신산업 위주이므로 자산 평가 변동성이 큽니다. <b>'매우 높은 위험 (1등급)'</b> 금융 상품군에 해당하므로 가입 전 투자 성향 분석 및 판매사 약관 교차 확인이 필수적입니다.</li>
+            <li><b>금융권 정식 출시일정 가이드:</b> <b>2026년 5월 22일</b>에 정식 출시되었으며, 협약이 완료된 시중 종합은행 10개사 및 대형 증권사 15개사 영업점/온라인 채널을 통해 가입 접수가 원활히 진행 중입니다.</li>
+        </ul>
+    </div>
+
+    <!-- 하단 풋터 -->
+    <div class="footer-info">
+        💡 본 가이드는 정책 당국의 예산 집행 한도 설정 및 세법 개정 추이에 따라 세부 요건 변동이 발생할 수 있으므로, 최종 신청 전 지정 취급 금융기관의 투자설명서를 반드시 확인하시기 바랍니다.
+    </div>
+</div>
+
+</body>
+</html>
