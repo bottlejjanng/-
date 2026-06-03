@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아파트 매매 잔금날 올인원 실전 노트</title>
+    <style>
+        /* 정부24 및 국토교통부 매뉴얼 서식 스타일의 신뢰감 있는 화이트/네이비 디자인 */
+        :root {
+            --bg-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-main: #222222;
+            --text-desc: #555555;
+            --border-color: #cccccc;
+            --point-blue: #1e3a8a;
+            --point-blue-light: #eff6ff;
+            --point-blue-border: #bfdbfe;
+            --point-sky: #3b82f6;
+            --table-header: #f8fafc;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --warning-bg: #fef2f2;
+            --warning-border: #fca5a5;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --success-color: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .notion-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 메인 타이틀 */
+        .main-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--point-blue);
+            line-height: 1.4;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--point-blue);
+            padding-bottom: 15px;
+        }
+
+        /* 상단 인트로 */
+        .intro-box {
+            background-color: var(--point-blue-light);
+            border: 1px solid var(--point-blue-border);
+            border-left: 4px solid var(--point-sky);
+            padding: 16px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--point-blue);
+            text-align: center;
+        }
+
+        /* 대단원 섹션 */
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: var(--point-blue);
+            margin: 36px 0 16px 0;
+            padding: 10px 16px;
+            border-radius: 4px;
+        }
+
+        .sub-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--point-sky);
+            margin: 20px 0 10px 4px;
+            padding-left: 8px;
+            border-left: 3px solid var(--point-sky);
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--text-main);
+            margin-bottom: 14px;
+        }
+
+        .bold-text {
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        /* 체크리스트 스타일 */
+        .todo-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: flex-start;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 14.5px;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        .todo-item:hover {
+            border-color: var(--point-blue-border);
+            background-color: var(--point-blue-light);
+        }
+
+        .todo-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 19px;
+            height: 19px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            outline: none;
+            margin-right: 12px;
+            margin-top: 3px;
+            cursor: pointer;
+            position: relative;
+            background-color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .todo-checkbox:checked {
+            background-color: var(--point-sky);
+            border-color: var(--point-sky);
+        }
+
+        .todo-checkbox:checked::after {
+            content: '✓';
+            font-size: 13px;
+            color: #ffffff;
+            position: absolute;
+            top: -2px;
+            left: 3px;
+            font-weight: bold;
+        }
+
+        .todo-content {
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .todo-label {
+            font-weight: 700;
+            color: var(--point-blue);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* 하이라이트 배지 */
+        .badge-point {
+            display: inline-block;
+            background-color: var(--accent-orange);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        /* 🚨 주의사항 섹션 */
+        .warning-section {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-left: 4px solid var(--accent-red);
+            padding: 18px;
+            margin-top: 36px;
+            border-radius: 4px;
+        }
+
+        .warning-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-red);
+            margin-bottom: 12px;
+        }
+
+        .warning-box {
+            background-color: #ffffff;
+            border: 1px dashed #fca5a5;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+
+        .warning-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .warning-box-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .warning-box-desc {
+            font-size: 13px;
+            color: var(--text-desc);
+            line-height: 1.6;
+        }
+
+        /* 하단 가이드 멘트 */
+        .footer-info {
+            font-size: 13px;
+            color: var(--text-desc);
+            background-color: #edf2f7;
+            padding: 14px;
+            line-height: 1.6;
+            margin-top: 32px;
+            text-align: center;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="notion-container">
+    <!-- 메인 타이틀 -->
+    <h1 class="main-title">🏡 아파트 매매 잔금날 올인원 실전 노트</h1>
+
+    <!-- 상단 인트로 -->
+    <div class="intro-box">
+        💡 "잔금날 아침은 생각보다 정신없습니다. 전날 90% 이상 세팅해 둬야 안전합니다."
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="section-title">📌 STEP 1. 잔금 전날 (D-1 사전 세팅)</div>
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step1-1">
+            <div class="todo-content">
+                <label for="step1-1" class="todo-label">잔금 및 부대비용 최종 확정</label>
+                금융기관 대출 실행 금액을 제외하고, 당일 본인이 자력으로 이체해야 하는 순수 잔금 잔액과 공인중개사 중개보수 등 지출 예산을 최종 확인합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step1-2">
+            <div class="todo-content">
+                <label for="step1-2" class="todo-label">대출 실행 타임라인 재확인</label>
+                디딤돌 대출, 보금자리론 또는 시중은행 주택담보대출 등 담당 은행 대출 상담사에게 당일 몇 시경 대출금이 매도인 계좌로 송금되는지 정확한 실행 시각을 체크합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step1-3">
+            <div class="todo-content">
+                <label for="step1-3" class="todo-label">소유권 이전 담당 법무사 동선 맞춤</label>
+                나의 소유권 이전 등기를 책임져 줄 담당 법무사(또는 은행 연계 법무사)의 성함과 연락처를 휴대전화에 미리 저장하고 당일 미팅 동선을 조율합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step1-4">
+            <div class="todo-content">
+                <label for="step1-4" class="todo-label">매도인 수령 계좌 교차 검증</label>
+                당일 억 단위의 거액이 오송금되는 대형 사고를 방지하기 위해 매도인(집주인)의 성명, 계좌번호, 개설 은행 정보를 미리 받아 확보해 둡니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step1-5">
+            <div class="todo-content">
+                <label for="step1-5" class="todo-label">취득세 납부 방식 및 한도 체크</label>
+                잔금 직후 등기 접수를 위해 취득세를 즉시 납부해야 합니다. 신용카드 납부 시 한도 증액을 전날 마쳐두거나, 계좌 이체 시 잔액 잔고를 이중 체크합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step1-6">
+            <div class="todo-content">
+                <label for="step1-6" class="todo-label">아파트 관리비 정산 기준일 조율</label>
+                해당 아파트 관리사무소에 사전 연락하여 이사 당일 오전까지의 관리비·중간정산 기준일을 미리 매끄럽게 어레인지해 둡니다.
+            </div>
+        </li>
+    </ul>
+
+    <!-- STEP 2 -->
+    <div class="section-title">📌 STEP 2. 잔금 당일 오전 (서류 및 집 상태 체크)</div>
+    <p style="font-size: 14px; color: var(--text-desc); margin-left: 4px; margin-bottom: 12px;">"도장 찍고 돈 보내면 끝입니다. 송금 버튼을 누르기 전, 매의 눈으로 확인하세요."</p>
+    
+    <div class="sub-section-title">1) 법무사용 필수 서류 최종 확인</div>
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-1">
+            <div class="todo-content">
+                <label for="step2-1" class="todo-label">등기권리증 (등기필증) 대조</label>
+                매도인이 지참한 문서가 해당 주택의 진짜 '집문서' 원본이 맞는지 현장에서 확인합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-2">
+            <div class="todo-content">
+                <label for="step2-2" class="todo-label">매도인 인감증명서 용도 확인</label>
+                반드시 일반용이 아닌 <span class="bold-text" style="color: var(--accent-red);">[부동산 매도용]</span>으로 발급되었는지 확인하고, 본인(매수인)의 성명, 주민등록번호, 주소가 오타 없이 정확히 기재되어 있는지 대조합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-3">
+            <div class="todo-content">
+                <label for="step2-3" class="todo-label">주민등록초본 이력 확인</label>
+                매도인의 과거 주소 변동 이력이 단 하나도 누락되지 않고 '전체 포함'으로 출력되어 있는지 검증합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-4">
+            <div class="todo-content">
+                <label for="step2-4" class="todo-label">위임장 및 대리권 서류 검원</label>
+                대리인 계약이거나 법무사 대리 접수를 위한 위임장 날인 상태와 매도인 신분증 사본의 일치 여부를 체크합니다.
+            </div>
+        </li>
+    </ul>
+
+    <div class="sub-section-title">2) 공실 상태의 집 최종 스캔</div>
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-5">
+            <div class="todo-content">
+                <label for="step2-5" class="todo-label">매매 계약서 특약 옵션 이행 확인</label>
+                기존 가구·짐이 다 빠진 상태에서 시스템 에어컨, 인덕션, 붙박이장, 식기세척기 등 남겨두기로 약정 동의한 옵션 가전과 가구가 그대로 보존되어 있는지 점검합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-6">
+            <div class="todo-content">
+                <label for="step2-6" class="todo-label">사각지대 숨은 하자 및 누수 추적</label>
+                종전 매도인의 대형 가구·가전에 가려져 파악이 불가능했던 안방 천장, 발코니 베란다 벽면의 누수 흔적이나 곰팡이 유무를 파악하고 창문 샤시 개폐 상태를 스캔합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-7">
+            <div class="todo-content">
+                <label for="step2-7" class="todo-label">기본 인프라 시설 작동 테스트</label>
+                욕실 및 주방 싱크대 모든 수도의 수압과 배수 상태를 확인하고, 실내 전등 스위치 작동 여부 및 보일러·가스 인입 상태를 최종 가동해 봅니다.
+            </div>
+        </li>
+    </ul>
+
+    <div class="sub-section-title">3) 요금 분쟁 방지 정산</div>
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-8">
+            <div class="todo-content">
+                <label for="step2-8" class="todo-label">당월 사용 관리비 정산</label>
+                이사 당일 오전 시점까지 산출된 중간 관리비 정산 영수증 내역을 명확히 대조하고 매도인 측으로부터 해당 비용을 상계 정산받습니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step2-9">
+            <div class="todo-content">
+                <label for="step2-9" class="todo-label">계량기 3종 정밀 사진 촬영 <span class="badge-point">★필수</span></label>
+                입주 직전 <span class="bold-text">[전기 / 수도 / 가스]</span> 계량기 계량 수치판을 스마트폰 카메라로 정밀 촬영해 둡니다. 이 정산 시점 데이터를 기반으로 추후 전 소유주와의 공공요금 분쟁을 완벽하게 예방할 수 있습니다.
+            </div>
+        </li>
+    </ul>
+
+    <!-- STEP 3 -->
+    <div class="section-title">📌 STEP 3. 잔금 당일 오후 (송금 및 인수인계)</div>
+    
+    <div class="sub-section-title">1) 대출 현황 및 소유권 이전 마무리</div>
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step3-1">
+            <div class="todo-content">
+                <label for="step3-1" class="todo-label">매도인 기존 근저당권 말소 실시간 확인</label>
+                매도인 주택에 기존 대출 근저당이 설정되어 있는 경우, 내가 송금한 잔금 재원으로 당해 기존 대출을 즉시 상환하고 상환 영수증 및 <b>‘근저당권 말소등기 접수’</b>가 실시간 진행되는지 법무사와 동행 확인합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step3-2">
+            <div class="todo-content">
+                <label for="step3-2" class="todo-label">법무사 소유권 이전 등기 접수 문자 확보</label>
+                잔금 집행 절차가 완료되면 법무사가 관할 등기소로 이동합니다. 오후 늦은 시간 법무사로부터 등기소 <b>‘접수 완료 문자’</b>와 <b>‘법정 접수번호’</b>를 피드백 받아 보관해야 비로소 법적 소유권 확보가 마감됩니다.
+            </div>
+        </li>
+    </ul>
+
+    <div class="sub-section-title">2) 각종 열쇠 및 인프라 인수인계</div>
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step3-3">
+            <div class="todo-content">
+                <label for="step3-3" class="todo-label">출입 보안 비밀번호 인수</label>
+                단지 공동현관 진입 및 세대 도어록 현관 비밀번호 초기 설정값을 정확히 인도받습니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step3-4">
+            <div class="todo-content">
+                <label for="step3-4" class="todo-label">실물 물리 키 세트 수령</label>
+                현관 카드키, 세대 마스터키, 단지 우편함 개폐 비밀번호 및 실물 마스터 열쇠 일체를 누락 없이 수령합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step3-5">
+            <div class="todo-content">
+                <label for="step3-5" class="todo-label">단지 편의 소모품 및 리모컨 수령</label>
+                지정 음식물 쓰레기 종량 카드, 단지 내 보유 차량 입주민 주차 등록 승계 확인서, 시스템 에어컨·전동 커튼을 포함한 실내 기기 전용 리모컨 일체를 인수인계 받습니다.
+            </div>
+        </li>
+    </ul>
+
+    <!-- STEP 4 -->
+    <div class="section-title">📌 STEP 4. 잔금 후 바로 할 일 (D-Day 마감 행정)</div>
+    <p style="font-size: 14px; color: var(--text-desc); margin-left: 4px; margin-bottom: 12px;">"숨 돌리기 전, 오늘 안에 끝내야 하는 필수 행정 절차들입니다."</p>
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step4-1">
+            <div class="todo-content">
+                <label for="step4-1" class="todo-label">당일 전입신고 및 확정일자 부여 완료</label>
+                새로운 주택에 대한 소유권을 법적으로 완벽하게 보호하고 제3자 대항력을 즉시 확보하기 위해 당일 관할 주민센터 방문 혹은 정부24 시스템을 통해 전입신고 절차를 매듭짓습니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step4-2">
+            <div class="todo-content">
+                <label for="step4-2" class="todo-label">아파트 관리사무소 입주민 명부 등록</label>
+                단지 내 관리사무소를 방문하여 신규 입주자 카드를 작성 및 제출하고, 소유 차량 등록 및 당일 이사 엘리베이터·사다리차 이용 스케줄을 최종 체크합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step4-3">
+            <div class="todo-content">
+                <label for="step4-3" class="todo-label">기본 주거 인프라 명의 변경 3종 세트</label>
+                지역 관할 도시가스 고객센터(가스 인입 및 명의자 변경), 한국전력공사 국번없이 123(전기 명의 변경), 인터넷 및 IPTV 서비스 이전 설치 신청을 오늘 내로 완료합니다.
+            </div>
+        </li>
+        <li class="todo-item">
+            <input type="checkbox" class="todo-checkbox" id="step4-4">
+            <div class="todo-content">
+                <label for="step4-4" class="todo-label">취득세 세액 납부 영수 마감</label>
+                담당 법무사를 통해 현장에서 직접 또는 모바일로 전달받은 취득세 납부서를 활용하여 당일 가상계좌 이체 및 세액 납부를 최종 완료합니다.
+            </div>
+        </li>
+    </ul>
+
+    <!-- 🚨 주의사항 -->
+    <div class="warning-section">
+        <div class="warning-title">🚨 부동산 선배들이 겪은 잔금날 대표 멘붕 포인트 (필독)</div>
+        
+        <div class="warning-box">
+            <div class="warning-box-title">💥 세입자 퇴거 주택 매수 시: 장기수선충당금 정산 정체</div>
+            <div class="warning-box-desc">
+                아파트 노후화를 막기 위해 적립하는 장기수선충당금은 기본적으로 '실소유주(집주인)'가 부담해야 하는 자금입니다. 만약 기존에 <span class="bold-text">전·월세 세입자가 거주하던 주택을 매수</span>하는 케이스라면, 당해 세입자가 퇴거하며 인출을 요구하는 장기수선충당금 누적액은 전 집주인(매도인)이 지급해야 합니다. 따라서 잔금 정산 시 매도인이 받아야 할 대금에서 이 누적 충당금만큼을 정확히 차감·상계하고 차액만 송금해야 하므로, 관리사무소에 정밀 산정 내역을 미리 요청해 두어야 대금 분쟁을 막을 수 있습니다.
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <div class="warning-box-title">💥 1일 뱅킹 이체 한도 미증액으로 인한 일시적 결제 먹통</div>
+            <div class="warning-box-desc">
+                평소 수백만 원 수준의 기본 이체 한도에 묶여있다가 당일 현장에서 갑자기 몇 억 단위의 잔금을 송금하려 하면 모바일 뱅킹 앱 상에서 한도 초과 오류가 발생해 잔금 일정이 전면 마비됩니다. 주말이나 당일 급박하게 변경이 불가능할 수 있으므로, 반드시 <span class="bold-text">잔금일 전날 평일 영업시간 중</span>에 주거래 은행 영업점을 방문하거나 비대면 인증을 통해 스마트폰 뱅킹 앱의 '1일/1회 이체 한도'를 억 단위 이상으로 여유 있게 증액해 두어야 합니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- 하단 풋터 -->
+    <div class="footer-info">
+        🏠 매매 잔금일 당일은 예기치 못한 시차가 수시로 발생하므로, 타임라인 노트를 핸드폰에 소지하시고 현장에서 항목별 확인 도장을 찍어가며 차분하게 대금을 집행하시기 바랍니다.
+    </div>
+</div>
+
+</body>
+</html>
