@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부동산 매매 총 비용 계산기</title>
+    <style>
+        /* 정부24/홈택스 스타일의 깔끔한 화이트/블루 톤 웹 디자인 */
+        :root {
+            --bg-color: #ffffff;
+            --container-bg: #ffffff;
+            --text-main: #222222;
+            --text-desc: #666666;
+            --border-color: #cccccc;
+            --border-focus: #2b6cb0;
+            --point-blue: #3182ce;
+            --point-blue-hover: #2b6cb0;
+            --point-blue-disabled: #e2e8f0;
+            --result-bg: #ebf8ff;
+            --result-border: #bee3f8;
+            --card-sub-bg: #f7fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+            text-align: center;
+            border-bottom: 2px solid var(--point-blue);
+            padding-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2b6cb0;
+            margin-top: 30px;
+            margin-bottom: -10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-section {
+            padding: 24px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-section {
+            flex: 1;
+            min-width: 280px;
+            border-bottom: none;
+            padding: 12px 0;
+        }
+
+        .question-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .question-desc {
+            font-size: 13px;
+            color: var(--text-desc);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        /* 라디오 및 체크박스 버튼 스타일 */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-inline-group, .checkbox-inline-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .radio-label, .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            background-color: #ffffff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            width: 100%;
+            user-select: none;
+        }
+
+        .radio-inline-group .radio-label, .checkbox-inline-group .checkbox-label {
+            width: auto;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .radio-label input[type="radio"], .checkbox-label input[type="checkbox"] {
+            accent-color: var(--point-blue);
+            margin: 0;
+        }
+
+        /* 셀렉트 박스 스타일 */
+        .styled-select {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 14px;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+            border-radius: 0; /* 각진 홈택스 스타일 유지 */
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+
+        .styled-select:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        /* 텍스트 입력창 스타일 */
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .styled-input {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 11px 85px 11px 14px;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .styled-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        .input-unit {
+            position: absolute;
+            right: 14px;
+            color: #4a5568;
+            font-size: 13px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        /* 분석하기 버튼 */
+        .submit-container {
+            padding: 30px 0 10px 0;
+            text-align: center;
+        }
+
+        .btn-submit {
+            width: 100%;
+            max-width: 340px;
+            height: 54px;
+            background-color: var(--point-blue);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--point-blue-hover);
+        }
+
+        /* 결과 화면 디자인 스타일 */
+        #resultBox {
+            margin-top: 40px;
+            display: none;
+        }
+
+        .result-box-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2b6cb0;
+            border-bottom: 2px dashed #bee3f8;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .result-main-card {
+            background-color: var(--result-bg);
+            border: 1px solid var(--result-border);
+            padding: 24px;
+            color: #2c5282;
+            margin-bottom: 16px;
+        }
+
+        .result-section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #edf2f7;
+            padding-bottom: 4px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .sub-item {
+            font-size: 12px;
+            color: var(--text-desc);
+            padding-left: 12px;
+            margin-top: -4px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .result-item.highlight {
+            font-weight: 700;
+            color: #2b6cb0;
+            border-top: 1px dashed #bee3f8;
+            padding-top: 10px;
+            margin-top: 12px;
+        }
+
+        .result-highlight-price {
+            color: #e53e3e;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 10px 0;
+            text-align: center;
+            background-color: #ffffff;
+            border: 1px solid #fed7d7;
+            padding: 14px;
+        }
+
+        .text-info-card {
+            font-size: 12px;
+            color: var(--text-desc);
+            background-color: #edf2f7;
+            padding: 16px;
+            line-height: 1.6;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1 class="main-title">부동산 매매 총 비용 계산기</h1>
+    
+    <div class="section-title">1. 주택 기본 정보</div>
+
+    <div class="form-row">
+        <div class="form-section">
+            <div class="question-title">아파트 매매 가격</div>
+            <div class="input-wrapper">
+                <input type="number" id="purchasePrice" class="styled-input" placeholder="예: 8.5" step="0.01" required>
+                <span class="input-unit">억원 (매매가)</span>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="question-title">정부 공시가격 / 시가표준액</div>
+            <div class="input-wrapper">
+                <input type="number" id="officialPrice" class="styled-input" placeholder="예: 5.5" step="0.01" required>
+                <span class="input-unit">억원 (공시가)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-section">
+            <div class="question-title">아파트 전용면적 범위</div>
+            <div class="radio-inline-group">
+                <label class="radio-label">
+                    <input type="radio" name="exclusiveAreaRange" value="85_under" checked>
+                    <span>85㎡ 이하</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="exclusiveAreaRange" value="85_over">
+                    <span>85㎡ 초과</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="question-title">취득 후 세대 최종 주택 수</div>
+            <select id="houseCount" class="styled-select">
+                <option value="1">1주택 (일시적 2주택 포함)</option>
+                <option value="2">2주택</option>
+                <option value="3">3주택</option>
+                <option value="4">4주택 이상</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-section">
+            <div class="question-title">아파트 소재 지역</div>
+            <div class="radio-inline-group">
+                <label class="radio-label">
+                    <input type="radio" name="region" value="metro" checked>
+                    <span>서울 및 광역시</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="region" value="other">
+                    <span>그 외 지역</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="question-title">규제 지역 여부</div>
+            <div class="checkbox-inline-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="isRegulated">
+                    <span>조정대상지역에 해당</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">국민주택채권 할인율</div>
+        <div class="question-desc" style="color: #dd6b20; font-weight: 500;">* 현재 채권 과세표준 할인률을 입력하세요. 모르시면 공란으로 두셔도 됩니다.</div>
+        <div class="input-wrapper" style="max-width: 300px;">
+            <input type="number" id="bondDiscountRate" class="styled-input" value="15" step="0.00001" min="0.00001" max="100" placeholder="예: 14.74723">
+            <span class="input-unit">%</span>
+        </div>
+    </div>
+
+    <div class="section-title">2. 세제 혜택 및 법무사 비용</div>
+
+    <div class="form-section">
+        <div class="question-title">세제 감면 조건</div>
+        <div class="question-desc">해당 가구 규정에 맞는 감면 특례 조건을 선택해 주세요.</div>
+        <div class="checkbox-inline-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="isFirstHome">
+                <span>생애 최초 구입</span>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="isChildbirth">
+                <span>24년 이후 출산 또는 취득일로부터 1년 이내 출산 예정</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">소유권 이전 법무사 대행 여부</div>
+        <div class="radio-inline-group">
+            <label class="radio-label">
+                <input type="radio" name="useLawyer" value="Y" checked>
+                <span>법무사 위임 (평균 45만원)</span>
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="useLawyer" value="N">
+                <span>셀프 등기 진행 (0원)</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="section-title">3. 이사, 리모델링 등 부대비용 (선택 입력)</div>
+
+    <div class="form-row">
+        <div class="form-section">
+            <div class="question-title">리모델링 비용</div>
+            <div class="input-wrapper">
+                <input type="number" id="costInterior" class="styled-input" placeholder="미입력 시 0" value="0">
+                <span class="input-unit">원</span>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="question-title">가전 구입 비용</div>
+            <div class="input-wrapper">
+                <input type="number" id="costHomeApp" class="styled-input" placeholder="미입력 시 0" value="0">
+                <span class="input-unit">원</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-section">
+            <div class="question-title">가구 구입 비용</div>
+            <div class="input-wrapper">
+                <input type="number" id="costFurniture" class="styled-input" placeholder="미입력 시 0" value="0">
+                <span class="input-unit">원</span>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="question-title">이사 비용</div>
+            <div class="input-wrapper">
+                <input type="number" id="costMoving" class="styled-input" placeholder="미입력 시 0" value="0">
+                <span class="input-unit">원</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="submit-container">
+        <button type="button" class="btn-submit" onclick="calculateExpenses()">💰 소요 예산 종합 산출하기</button>
+    </div>
+
+    <div id="resultBox">
+        <h2 class="result-box-title">📊 비용 산출 결과 정산서</h2>
+        
+        <div class="result-main-card">
+            <div style="font-size: 14px; color: #4a5568; text-align:center;">🔥 최종 총 필요 자금 (A + B + C)</div>
+            <div id="resTotalCost" class="result-highlight-price">총 0 원</div>
+            <div style="font-size:12px; color:var(--text-desc); text-align:center; margin-top:-4px;">
+                (아파트 매매 대금 및 세금, 부대 비용 등 총 합산)
+            </div>
+        </div>
+
+        <div style="background-color: var(--card-sub-bg); border: 1px solid #e2e8f0; padding: 20px;">
+            <div class="result-section-title" style="margin-top:0;">A. 아파트 기본 매매대금</div>
+            <div class="result-item">
+                <span>• 아파트 분양/매매 원금</span>
+                <span id="resApartmentPrice" style="font-weight: bold;">0 원</span>
+            </div>
+
+            <div class="result-section-title">B. 부동산 취득 필수 부대비용</div>
+            <div class="result-item">
+                <span>1. 부동산 중개보수 <span style="font-size:11px; color:var(--text-desc);">(VAT 10% 포함)</span></span>
+                <span id="resBrokerFee" style="font-weight: 600;">0 원</span>
+            </div>
+            <div class="sub-item" id="resBrokerFeeSub">중개수수료 원금: 0 원 + 부가세: 0 원</div>
+
+            <div class="result-item">
+                <span>2. 세금 총액 <span style="font-size:11px; color:var(--text-desc);">(취득세 + 지방교육세)</span></span>
+                <span id="resTaxTotal" style="font-weight: 600;">0 원</span>
+            </div>
+            <div class="sub-item" id="resTaxSub_Acquisition">└ 취득세(지방세 본세): 0 원</div>
+            <div class="sub-item" id="resTaxSub_Edu">└ 지방교육세(지방세 부가): 0 원</div>
+
+            <div class="result-item">
+                <span>3. 농어촌특별세 <span style="font-size:11px; color:var(--text-desc);">(국세)</span></span>
+                <span id="resNongteukTax" style="font-weight: 600;">0 원</span>
+            </div>
+
+            <div class="result-item">
+                <span>4. 국민주택채권 당일 본인부담금</span>
+                <span id="resBondCost" style="font-weight: 600;">0 원</span>
+            </div>
+            <div class="sub-item" id="resBondSub">법정 채권의무 매입 금액: 0 원</div>
+
+            <div class="result-item">
+                <span>5. 소유권 이전 법무사 위임 비용</span>
+                <span id="resLawyerCost" style="font-weight: 600;">0 원</span>
+            </div>
+
+            <div class="result-item highlight">
+                <span>▶ 순수 부대비용 소계 (1~5 합계)</span>
+                <span id="resSubTotalExpenses" style="font-weight: bold;">0 원</span>
+            </div>
+
+            <div class="result-section-title">C. 주거 인프라 추가 지출 비용</div>
+            <div class="result-item">
+                <span>• 인테리어 + 가전 + 가구 + 이사 합산</span>
+                <span id="resInfraTotal" style="font-weight: bold; color: #2b6cb0;">0 원</span>
+            </div>
+        </div>
+        
+        <div class="text-info-card">
+            ※ 국민주택채권 본인부담금은 사용자가 입력한 할인율을 기준으로 계산됩니다.<br>
+            ※ 할인율은 매일 변동되며, 매입일 기준 할인율을 입력하는 것이 가장 정확합니다.<br>
+            ※ 정부 공시가격이 공시되지 않은 신축 분양 공동주택의 경우, 취득가격(분양가격)이 시가표준액 기준선이 됩니다.<br>
+            ※ 정부 인지세(약 7~15만원 선) 및 대법원 증지대 등 미세 실비는 법무사 대행 비용 마진 내에 평균 흡수 처리하여 산정했습니다.
+        </div>
+    </div>
+</div>
+
+<script>
+function calculateExpenses() {
+    // 1. 값 가져오기 (억원 단위를 원 단위로 환산 처리 - Math.round로 부동소수점 오차 차단)
+    const inputPurchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+    const inputOfficialPrice = parseFloat(document.getElementById('officialPrice').value);
+    
+    // 라디오 버튼 선택값에 따라 exclusiveArea 매핑 (이하=85, 초과=86)
+    const areaRange = document.querySelector('input[name="exclusiveAreaRange"]:checked').value;
+    const exclusiveArea = areaRange === '85_under' ? 85 : 86;
+    
+    if (isNaN(inputPurchasePrice) || isNaN(inputOfficialPrice)) {
+        alert("기본 주택 정보(매매가, 공시가)에 올바른 숫자를 입력해주세요.");
+        return;
+    }
+
+    // 내부 계산을 위해 억원 단위를 원 단위 정수로 변경
+    const purchasePrice = Math.round(inputPurchasePrice * 100000000);
+    const officialPrice = Math.round(inputOfficialPrice * 100000000);
+
+    // 채권 할인율 검증 및 가져오기 로직
+    let rawDiscountRate = document.getElementById('bondDiscountRate').value.trim();
+    if (rawDiscountRate === "") {
+        rawDiscountRate = "15"; 
+        document.getElementById('bondDiscountRate').value = "15";
+    }
+    
+    const parsedDiscountRate = parseFloat(rawDiscountRate);
+    
+    if (isNaN(parsedDiscountRate) || parsedDiscountRate <= 0 || parsedDiscountRate > 100) {
+        alert("국민주택채권 할인율을 올바르게 입력해주세요. (0 초과 100 이하의 숫자만 가능)");
+        return;
+    }
+
+    const bondDiscountRate = parsedDiscountRate / 100;
+
+    // 선택형 인프라 비용 파싱
+    const costInterior = Math.round(parseFloat(document.getElementById('costInterior').value)) || 0;
+    const costHomeApp = Math.round(parseFloat(document.getElementById('costHomeApp').value)) || 0;
+    const costFurniture = Math.round(parseFloat(document.getElementById('costFurniture').value)) || 0;
+    const costMoving = Math.round(parseFloat(document.getElementById('costMoving').value)) || 0;
+
+    const isMetro = document.querySelector('input[name="region"]:checked').value === 'metro';
+    const isRegulated = document.getElementById('isRegulated').checked;
+    const houseCount = parseInt(document.getElementById('houseCount').value);
+    const isFirstHome = document.getElementById('isFirstHome').checked;
+    const isChildbirth = document.getElementById('isChildbirth').checked;
+    const useLawyer = document.querySelector('input[name="useLawyer"]:checked').value === 'Y';
+
+    // 중개보수 계산 + VAT 10%
+    let brokerFeeBase = 0;
+    if (purchasePrice < 50000000) {
+        brokerFeeBase = Math.min(purchasePrice * 0.006, 250000);
+    } else if (purchasePrice < 200000000) {
+        brokerFeeBase = Math.min(purchasePrice * 0.005, 800000);
+    } else if (purchasePrice < 900000000) {
+        brokerFeeBase = purchasePrice * 0.004;
+    } else if (purchasePrice < 1200000000) {
+        brokerFeeBase = purchasePrice * 0.005;
+    } else if (purchasePrice < 1500000000) {
+        brokerFeeBase = purchasePrice * 0.006;
+    } else {
+        brokerFeeBase = purchasePrice * 0.007;
+    }
+
+    brokerFeeBase = Math.round(brokerFeeBase);
+    let brokerFeeVat = Math.floor(brokerFeeBase * 0.1);
+    let brokerFeeTotal = brokerFeeBase + brokerFeeVat;
+
+    // 취득세 및 지방교육세 세부 정밀 산출
+    let acquisitionRate = 0.0;
+    if (isRegulated) { 
+        if (houseCount === 1) {
+            if (purchasePrice <= 600000000) acquisitionRate = 0.01;
+            else if (purchasePrice <= 900000000) acquisitionRate = (purchasePrice * (2 / 300000000) - 3) / 100;
+            else acquisitionRate = 0.03;
+        } else if (houseCount === 2) acquisitionRate = 0.08;
+        else acquisitionRate = 0.12;
+    } else { 
+        if (houseCount <= 2) {
+            if (purchasePrice <= 600000000) acquisitionRate = 0.01;
+            else if (purchasePrice <= 900000000) acquisitionRate = (purchasePrice * (2 / 300000000) - 3) / 100;
+            else acquisitionRate = 0.03;
+        } else if (houseCount === 3) acquisitionRate = 0.08;
+        else acquisitionRate = 0.12;
+    }
+
+    acquisitionRate = Math.round(acquisitionRate * 10000) / 10000;
+    let baseAcquisitionTax = Math.round(purchasePrice * acquisitionRate);
+
+    // 주택 감면 적용
+    let taxDiscount = 0;
+    if (isChildbirth && purchasePrice <= 1200000000) {
+        taxDiscount = Math.max(taxDiscount, 5000000);
+    }
+    if (isFirstHome) {
+        if (purchasePrice <= 600000000 && exclusiveArea <= 60) {
+            taxDiscount = Math.max(taxDiscount, 3000000);
+        } else if (purchasePrice <= 1200000000) {
+            taxDiscount = Math.max(taxDiscount, 2000000);
+        }
+    }
+    let finalAcquisitionTax = Math.max(0, baseAcquisitionTax - taxDiscount);
+
+    // 지방교육세 요율 매칭
+    let eduTaxRate = 0.001; 
+    if (acquisitionRate >= 0.01 && acquisitionRate <= 0.03) {
+        eduTaxRate = acquisitionRate * 0.1;
+    } else if (acquisitionRate === 0.08) {
+        eduTaxRate = 0.004;
+    } else if (acquisitionRate === 0.12) {
+        eduTaxRate = 0.004;
+    }
+    
+    let baseEduTax = Math.round(purchasePrice * eduTaxRate);
+    let finalEduTax = baseEduTax;
+    if (baseAcquisitionTax > 0 && taxDiscount > 0) {
+        let discountRatio = finalAcquisitionTax / baseAcquisitionTax;
+        finalEduTax = Math.round(baseEduTax * discountRatio);
+    }
+
+    let taxTotalSum = finalAcquisitionTax + finalEduTax;
+
+    // 농어촌특별세 계산
+    let nongteukTax = 0;
+    if (exclusiveArea > 85) { 
+        let nongteukRate = 0.002;
+        if (isRegulated && houseCount === 2) nongteukRate = 0.006;
+        else if (!isRegulated && houseCount === 3) nongteukRate = 0.006;
+        else if (isRegulated && houseCount >= 3) nongteukRate = 0.010;
+        else if (!isRegulated && houseCount >= 4) nongteukRate = 0.010;
+
+        nongteukTax = Math.round(purchasePrice * nongteukRate);
+    }
+
+    // 국민주택채권 계산
+    let bondRate = 0;
+    if (officialPrice >= 20000000 && officialPrice < 50000000) {
+        bondRate = 0.013;
+    } else if (officialPrice >= 50000000 && officialPrice < 100000000) {
+        bondRate = isMetro ? 0.019 : 0.014;
+    } else if (officialPrice >= 100000000 && officialPrice < 160000000) {
+        bondRate = isMetro ? 0.021 : 0.016;
+    } else if (officialPrice >= 160000000 && officialPrice < 260000000) {
+        bondRate = isMetro ? 0.023 : 0.018;
+    } else if (officialPrice >= 260000000 && officialPrice < 600000000) {
+        bondRate = isMetro ? 0.026 : 0.021;
+    } else if (officialPrice >= 600000000) {
+        bondRate = isMetro ? 0.031 : 0.026;
+    }
+
+    let bondPurchaseLimit = Math.floor(officialPrice * bondRate);
+    bondPurchaseLimit = Math.round(bondPurchaseLimit / 10000) * 10000;
+
+    let bondLossCost = Math.round(bondPurchaseLimit * bondDiscountRate);
+
+    // 법무사 비용 및 인프라 추가비 합산
+    const lawyerCost = useLawyer ? 450000 : 0; 
+    const infraTotalSum = costInterior + costHomeApp + costFurniture + costMoving; 
+
+    // 순수 부대비용 총 소계
+    const subTotalExpenses = brokerFeeTotal + taxTotalSum + nongteukTax + bondLossCost + lawyerCost;
+    
+    // 최종 자금 합산
+    const totalProjectBudget = purchasePrice + subTotalExpenses + infraTotalSum;
+
+    // 출력 매핑 데이터 연동
+    document.getElementById('resApartmentPrice').innerText = purchasePrice.toLocaleString() + " 원";
+    document.getElementById('resBrokerFee').innerText = brokerFeeTotal.toLocaleString() + " 원";
+    document.getElementById('resBrokerFeeSub').innerText = `중개 수수료 원금: ${brokerFeeBase.toLocaleString()} 원 + 부가세(10%): ${brokerFeeVat.toLocaleString()} 원`;
+    document.getElementById('resTaxTotal').innerText = taxTotalSum.toLocaleString() + " 원";
+    document.getElementById('resTaxSub_Acquisition').innerText = `└ 취득세(지방세 본세): ${finalAcquisitionTax.toLocaleString()} 원` + (taxDiscount > 0 ? ` [${taxDiscount.toLocaleString()}원 감면 혜택 반영됨]` : "");
+    document.getElementById('resTaxSub_Edu').innerText = `└ 지방교육세(지방세 부가): ${finalEduTax.toLocaleString()} 원`;
+    document.getElementById('resNongteukTax').innerText = exclusiveArea <= 85 ? "0 원 (전용 85㎡ 이하 면제)" : nongteukTax.toLocaleString() + " 원";
+    document.getElementById('resBondCost').innerText = bondLossCost.toLocaleString() + " 원";
+    document.getElementById('resBondSub').innerHTML = `법정 채권의무 매입 금액: ${bondPurchaseLimit.toLocaleString()} 원<br>적용 할인율: ${parsedDiscountRate}%`;
+    document.getElementById('resLawyerCost').innerText = lawyerCost.toLocaleString() + " 원" + (lawyerCost > 0 ? " (평균 수수료 기준 산정)" : " (셀프등기)");
+    document.getElementById('resSubTotalExpenses').innerText = subTotalExpenses.toLocaleString() + " 원";
+    document.getElementById('resInfraTotal').innerText = infraTotalSum.toLocaleString() + " 원" + ` (리모델링: ${costInterior.toLocaleString()}원 / 가전: ${costHomeApp.toLocaleString()}원 / 가구: ${costFurniture.toLocaleString()}원 / 이사: ${costMoving.toLocaleString()}원)`;
+    
+    // 최종 합산 금액 노출
+    document.getElementById('resTotalCost').innerText = "총 " + totalProjectBudget.toLocaleString() + " 원";
+
+    // 결과 활성화 및 스크롤 핸들링
+    const resultBox = document.getElementById('resultBox');
+    resultBox.style.display = 'block';
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
