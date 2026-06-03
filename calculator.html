@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주택구입 대출 맞춤 추천</title>
+    <style>
+        /* 정부24/홈택스 스타일의 깔끔한 화이트/블루 톤 웹 디자인 */
+        :root {
+            --bg-color: #ffffff;
+            --container-bg: #ffffff;
+            --text-main: #222222;
+            --text-desc: #666666;
+            --border-color: #cccccc;
+            --border-focus: #2b6cb0;
+            --point-blue: #3182ce;
+            --point-blue-hover: #2b6cb0;
+            --point-blue-disabled: #e2e8f0;
+            --result-bg: #ebf8ff;
+            --result-border: #bee3f8;
+            --card-sub-bg: #f7fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+            text-align: center;
+            border-bottom: 2px solid var(--point-blue);
+            padding-bottom: 15px;
+        }
+
+        .form-section {
+            padding: 32px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .question-desc {
+            font-size: 14px;
+            color: var(--text-desc);
+            margin-bottom: 16px;
+        }
+
+        /* 라디오 버튼 스타일 정리 */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-inline-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            background-color: #ffffff;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .radio-inline-group .radio-label {
+            width: auto;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .radio-label input[type="radio"] {
+            margin-top: 4px;
+            accent-color: var(--point-blue);
+        }
+
+        .radio-text-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .radio-subtext {
+            font-size: 12px;
+            color: var(--text-desc);
+            margin-top: 2px;
+        }
+
+        /* 텍스트 입력창 스타일 */
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            max-width: 400px;
+        }
+
+        .styled-input {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 70px 12px 14px;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .styled-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        .input-unit {
+            position: absolute;
+            right: 14px;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .multi-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 500px;
+        }
+
+        .multi-input-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .multi-input-row label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        /* 분석하기 버튼 */
+        .submit-container {
+            padding: 40px 0 20px 0;
+            text-align: center;
+        }
+
+        .btn-submit {
+            width: 100%;
+            max-width: 300px;
+            height: 54px;
+            background-color: var(--point-blue-disabled);
+            color: #a0aec0;
+            border: none;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: not-allowed;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit.active {
+            background-color: var(--point-blue);
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-submit.active:hover {
+            background-color: var(--point-blue-hover);
+        }
+
+        /* 결과 화면 디자인 스타일 */
+        #result-section {
+            margin-top: 40px;
+            display: none;
+        }
+
+        .result-box {
+            background-color: var(--result-bg);
+            border: 1px solid var(--result-border);
+            padding: 24px;
+            margin-top: 20px;
+            color: #2c5282;
+        }
+
+        .result-sub-card {
+            background-color: var(--card-sub-bg);
+            border: 1px solid #e2e8f0;
+            padding: 18px;
+            margin-top: 16px;
+            color: var(--text-main);
+        }
+
+        .result-highlight {
+            color: #2b6cb0;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .text-info-card {
+            font-size: 13px;
+            color: var(--text-desc);
+            background-color: #edf2f7;
+            padding: 12px;
+            line-height: 1.5;
+            margin-top: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        .badge-success { background-color: #2f855a; color: #fff; }
+        .badge-warning { background-color: #c05621; color: #fff; }
+
+        .term-radio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .term-btn {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: #4a5568;
+            padding: 10px 4px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .term-btn.selected {
+            background-color: #ebf8ff;
+            border-color: var(--point-blue);
+            color: var(--point-blue);
+        }
+
+        .term-btn.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            background-color: #edf2f7;
+            color: #a0aec0;
+        }
+
+        .product-item-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 14px;
+            margin-top: 12px;
+        }
+
+        .product-item-card.best {
+            border: 2px solid #38a169;
+            background-color: #f0fff4;
+        }
+
+        /* 폴백 안내 디자인 */
+        .fallback-card {
+            background-color: #fffaf0;
+            border: 1px solid #feebc8;
+            padding: 24px;
+            text-align: center;
+            margin-top: 16px;
+            color: #744210;
+        }
+
+        .btn-fallback {
+            width: 100%;
+            max-width: 260px;
+            height: 48px;
+            background-color: #dd6b20;
+            color: white;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        .btn-fallback:hover { background-color: #c05621; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1 class="main-title">주택구입 대출 맞춤 추천 계산기</h1>
+
+    <div class="form-section">
+        <div class="question-title">1. 원하는 대출 확인 방식을 선택해 주세요.</div>
+        <div class="question-desc">분석하고자 하는 상품 유형에 맞게 선택형으로 구성됩니다.</div>
+        <div class="radio-group">
+            <label class="radio-label">
+                <input type="radio" name="loan_type" value="기금" onchange="updateAnswers('loan_type', '기금')">
+                <div class="radio-text-wrapper">
+                    <span>🏠 정책대출 추천받기</span>
+                    <span class="radio-subtext">디딤돌, 보금자리론, 신생아특례대출 등 정부 정책 상품</span>
+                </div>
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="loan_type" value="시중" onchange="updateAnswers('loan_type', '시중')">
+                <div class="radio-text-wrapper">
+                    <span>🏦 대출 가능 금액 계산하기</span>
+                    <span class="radio-subtext">DSR, LTV를 고려하여 시중은행 기준 계산</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">2. 현재 결혼 상태는 어떻게 되시나요?</div>
+        <div class="question-desc">선택 유형에 따라 부부합산 여부 및 심사 허들이 달라집니다.</div>
+        <div class="radio-group">
+            <label class="radio-label">
+                <input type="radio" name="marital_status" value="미혼" onchange="updateAnswers('marital_status', '미혼')">
+                <div class="radio-text-wrapper"><span>미혼</span></div>
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="marital_status" value="신혼" onchange="updateAnswers('marital_status', '신혼')">
+                <div class="radio-text-wrapper">
+                    <span>신혼</span>
+                    <span class="radio-subtext">혼인기간 7년 이내 또는 3개월 내 결혼 예정</span>
+                </div>
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="marital_status" value="기혼" onchange="updateAnswers('marital_status', '기혼')">
+                <div class="radio-text-wrapper">
+                    <span>기혼</span>
+                    <span class="radio-subtext">신혼 기간이 경과한 일반 기혼 가구</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">3. 최근 2년 이내에 출산 또는 입양을 하셨나요?</div>
+        <div class="question-desc">※ 2023년 1월 1일 이후 출생아 포함 (태아 제외)</div>
+        <div class="radio-inline-group">
+            <label class="radio-label">
+                <input type="radio" name="has_baby" value="예" onchange="updateAnswers('has_baby', '예')">
+                <span>예</span>
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="has_baby" value="아니오" onchange="updateAnswers('has_baby', '아니오')">
+                <span>아니오</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">4. 현재 미성년 자녀 수는 어떻게 되시나요?</div>
+        <div class="question-desc">보금자리론 및 정책대출 소득 요건 우대 조건 계산에 활용됩니다.</div>
+        <div class="radio-inline-group">
+            <label class="radio-label"><input type="radio" name="children_count" value="0" onchange="updateAnswers('children_count', '0')"><span>없음</span></label>
+            <label class="radio-label"><input type="radio" name="children_count" value="1" onchange="updateAnswers('children_count', '1')"><span>1명</span></label>
+            <label class="radio-label"><input type="radio" name="children_count" value="2" onchange="updateAnswers('children_count', '2')"><span>2명</span></label>
+            <label class="radio-label"><input type="radio" name="children_count" value="3" onchange="updateAnswers('children_count', '3')"><span>3명 이상</span></label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">5. 맞벌이 여부를 선택해 주세요.</div>
+        <div class="question-desc">신생아 특례 대출 등 소득 완화 가이드라인에 반영됩니다.</div>
+        <div class="radio-inline-group">
+            <label class="radio-label"><input type="radio" name="is_dual_income" value="맞벌이" onchange="updateAnswers('is_dual_income', '맞벌이')"><span>맞벌이 부부</span></label>
+            <label class="radio-label"><input type="radio" name="is_dual_income" value="외벌이" onchange="updateAnswers('is_dual_income', '외벌이')"><span>외벌이 가구 (또는 미혼 단독)</span></label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">6. 본인의 나이는 어디에 해당하나요?</div>
+        <div class="question-desc">연령 기준별 신청 가능 기금 및 만기 한도를 계산합니다.</div>
+        <div class="radio-inline-group">
+            <label class="radio-label"><input type="radio" name="age_group" value="20" onchange="updateAnswers('age_group', '20')"><span>만 19~29세</span></label>
+            <label class="radio-label"><input type="radio" name="age_group" value="30" onchange="updateAnswers('age_group', '30')"><span>만 30~39세</span></label>
+            <label class="radio-label"><input type="radio" name="age_group" value="40" onchange="updateAnswers('age_group', '40')"><span>만 40세 이상</span></label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">7. 생애 최초로 주택을 구입하시나요?</div>
+        <div class="question-desc">주택 소유 이력 및 현재 보유 상태에 맞게 선택해 주세요.</div>
+        <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="home_ownership" value="생애최초" onchange="updateAnswers('home_ownership', '생애최초')"><span>생애최초 구입</span></label>
+            <label class="radio-label"><input type="radio" name="home_ownership" value="무주택(과거 주택 보유이력o)" onchange="updateAnswers('home_ownership', '무주택(과거 주택 보유이력o)')"><span>무주택(과거 주택 보유이력 있음)</span></label>
+            <label class="radio-label"><input type="radio" name="home_ownership" value="일시적 2주택" onchange="updateAnswers('home_ownership', '일시적 2주택')"><span>일시적 2주택자</span></label>
+            <label class="radio-label"><input type="radio" name="home_ownership" value="1주택 이상 보유" onchange="updateAnswers('home_ownership', '1주택 이상 보유')"><span>1주택 이상 계속 보유</span></label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">8. 구입하려는 집의 지역은 어디인가요?</div>
+        <div class="question-desc" style="color: #dd6b20; font-weight: 500;">
+            *규제지역 : 서울 전역, 과천, 광명, 성남(분당·수정·중원), 수원(영통·장안·팔달), 안양(동안), 용인(수지), 의왕, 하남 (그 외 비규제지역)
+        </div>
+        <div class="radio-inline-group">
+            <label class="radio-label"><input type="radio" name="region_type" value="규제" onchange="updateAnswers('region_type', '규제')"><span>규제지역</span></label>
+            <label class="radio-label"><input type="radio" name="region_type" value="비규제" onchange="updateAnswers('region_type', '비규제')"><span>비규제지역</span></label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title" id="title_income">9. 연소득은 얼마인가요?</div>
+        <div class="question-desc" id="desc_income">선택하신 결혼 상태에 맞게 본인 또는 부부합산 총 금액을 기재해 주세요.</div>
+        <div class="input-wrapper">
+            <input type="number" class="styled-input" id="input_income" placeholder="예: 5500" oninput="updateNumericInput('income', this.value)">
+            <span class="input-unit">만원/년</span>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title" id="title_assets">10. 보유하신 순자산은 얼마인가요?</div>
+        <div class="question-desc" id="desc_assets">예금, 주식, 부동산 등을 포함한 순자산 총액을 입력해 주세요.</div>
+        <div class="input-wrapper">
+            <input type="number" class="styled-input" id="input_assets" placeholder="예: 35000" oninput="updateNumericInput('assets', this.value)">
+            <span class="input-unit">만원</span>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">11. 구입 예정 주택 가격은 얼마인가요?</div>
+        <div class="question-desc">매매가 계약금 또는 감정 시세 기준입니다.</div>
+        <div class="input-wrapper">
+            <input type="number" class="styled-input" id="input_price" placeholder="예: 5.5" step="0.1" oninput="updateNumericInput('price', this.value)">
+            <span class="input-unit">억원</span>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="question-title">12. 다른 보유 대출 정보를 입력해 주세요.</div>
+        <div class="question-desc">보유 중인 기타 대출 정보가 없으면 금액란에 0을 입력해 주세요.</div>
+        
+        <div class="multi-input-container">
+            <div class="multi-input-row">
+                <label>대출 종류</label>
+                <div class="radio-inline-group">
+                    <label class="radio-label" style="padding: 8px 12px;">
+                        <input type="radio" name="loan_kind" value="일반대출" checked onchange="changeLoanKind('일반대출')"><span>일반대출</span>
+                    </label>
+                    <label class="radio-label" style="padding: 8px 12px;">
+                        <input type="radio" name="loan_kind" value="마이너스통장" onchange="changeLoanKind('마이너스통장')"><span>마이너스통장</span>
+                    </label>
+                </div>
+            </div>
+            <div class="multi-input-row">
+                <label id="label_other_amt">대출 금액(잔액)</label>
+                <div class="input-wrapper">
+                    <input type="number" class="styled-input" id="input_other_amt" placeholder="0" step="0.1" oninput="updateNumericInput('other_amt', this.value)">
+                    <span class="input-unit">억원</span>
+                </div>
+            </div>
+            <div class="multi-input-row">
+                <label>대출 금리</label>
+                <div class="input-wrapper">
+                    <input type="number" class="styled-input" id="input_other_rate" placeholder="0" step="0.1" oninput="updateNumericInput('other_rate', this.value)">
+                    <span class="input-unit">%</span>
+                </div>
+            </div>
+            <div class="multi-input-row" id="row_other_term">
+                <label>남은 상환기간</label>
+                <div class="input-wrapper">
+                    <input type="number" class="styled-input" id="input_other_term" placeholder="0" oninput="updateNumericInput('other_term', this.value)">
+                    <span class="input-unit">년</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="submit-container">
+        <button type="button" class="btn-submit" id="submit-btn" onclick="runAnalysis()" disabled>대출 분석하기</button>
+    </div>
+
+    <div id="result-section">
+        <h2 style="font-size: 20px; font-weight: 700; color: #2b6cb0; border-bottom: 2px dashed #bee3f8; padding-bottom: 8px;">🎯 맞춤 분석 결과</h2>
+        <div id="calculator-output"></div>
+    </div>
+</div>
+
+<script>
+    const initialAnswers = {
+        loan_type: '',
+        marital_status: '', 
+        has_baby: '',
+        children_count: '', 
+        is_dual_income: '', 
+        age_group: '',
+        home_ownership: '',
+        region_type: '',
+        income: null,
+        assets: null,
+        price: null,
+        loan_kind: '일반대출',
+        other_amt: null,
+        other_rate: null,
+        other_term: null
+    };
+
+    let surveyData = {
+        answers: JSON.parse(JSON.stringify(initialAnswers)),
+        calculated: {
+            validProductsList: [], 
+            currentSelectedTerm: 30, 
+            existingAnnualRepayment: 0
+        }
+    };
+
+    const rateTable = {
+        newborn: {
+            getRate: function(income, isDual, term) {
+                let base = 2.05;
+                if (!isDual) {
+                    if (income <= 2000) base = 2.05;
+                    else if (income <= 4000) base = 2.40;
+                    else if (income <= 6000) base = 2.65;
+                    else if (income <= 8500) base = 2.90;
+                    else if (income <= 10000) base = 3.20;
+                    else if (income <= 13000) base = 3.50;
+                } else {
+                    if (income <= 2000) base = 2.05;
+                    else if (income <= 4000) base = 2.40;
+                    else if (income <= 6000) base = 2.65;
+                    else if (income <= 8500) base = 2.90;
+                    else if (income <= 10000) base = 3.20;
+                    else if (income <= 13000) base = 3.50;
+                    else if (income <= 15000) base = 3.80;
+                    else if (income <= 17000) base = 4.15;
+                    else if (income <= 20000) base = 4.50;
+                }
+                if (term <= 10) return base - 0.25;
+                if (term <= 15) return base - 0.15;
+                if (term <= 20) return base - 0.05;
+                return base; 
+            }
+        },
+        honeymoon: {
+            getRate: function(income, term) {
+                let base = 3.50;
+                if (income <= 2000) base = 2.80;
+                else if (income <= 4000) base = 3.15;
+                else if (income <= 7000) base = 3.50;
+                else if (income <= 8500) base = 3.85;
+                if (term <= 10) return base - 0.25;
+                if (term <= 15) return base - 0.15;
+                if (term <= 20) return base - 0.05;
+                return base;
+            }
+        },
+        didimdol: {
+            getRate: function(income, term) {
+                let base = 4.15;
+                if (income <= 2000) base = 3.10;
+                else if (income <= 4000) base = 3.45;
+                else if (income <= 7000) base = 3.90;
+                else if (income <= 8500) base = 4.15;
+                if (term <= 10) return base - 0.25;
+                if (term <= 15) return base - 0.15;
+                if (term <= 20) return base - 0.05;
+                return base;
+            }
+        },
+        bogeum: {
+            getRate: function(income, term) {
+                let base = 4.35;
+                if (term <= 10) base = 4.05;
+                else if (term <= 15) base = 4.15;
+                else if (term <= 20) base = 4.20;
+                else if (term <= 30) base = 4.25;
+                else if (term <= 40) base = 4.30;
+                else base = 4.35;
+                return base;
+            }
+        },
+        commercial: {
+            getRate: function(income, isReg, term) {
+                let base = 4.15;
+                if (income <= 6000) base = 3.95;
+                else if (income <= 9000) base = 4.15;
+                else base = 4.40;
+                if (isReg) base += 0.1;
+                return base;
+            }
+        }
+    };
+
+    function updateAnswers(key, value) {
+        surveyData.answers[key] = value;
+        
+        if (key === 'marital_status') {
+            const tIncome = document.getElementById('title_income');
+            const dIncome = document.getElementById('desc_income');
+            const dAssets = document.getElementById('desc_assets');
+            if (value === '미혼') {
+                tIncome.innerText = "9. 본인 연소득은 얼마인가요?";
+                dIncome.innerText = "미혼 단독 세대주 기준 심사를 진행합니다.";
+                dAssets.innerText = "본인 명의의 순자산 총액을 입력해 주세요.";
+            } else {
+                tIncome.innerText = "9. 부부합산 연소득은 얼마인가요?";
+                dIncome.innerText = "배우자 소득을 포함한 총 연간 소득을 합산해 주세요.";
+                dAssets.innerText = "예금, 주식, 부동산 등 포함 부부합산 순자산 금액";
+            }
+        }
+        validateForm();
+    }
+
+    function updateNumericInput(key, value) {
+        if (value !== '' && parseFloat(value) >= 0) {
+            surveyData.answers[key] = parseFloat(value);
+        } else {
+            surveyData.answers[key] = null;
+        }
+        validateForm();
+    }
+
+    function changeLoanKind(kind) {
+        surveyData.answers.loan_kind = kind;
+        const lblAmt = document.getElementById('label_other_amt');
+        const rowTerm = document.getElementById('row_other_term');
+        const termInput = document.getElementById('input_other_term');
+
+        if (kind === '마이너스통장') {
+            lblAmt.innerText = "대출 한도금액";
+            rowTerm.style.display = "none";
+            surveyData.answers.other_term = 5;
+        } else {
+            lblAmt.innerText = "대출 금액(잔액)";
+            rowTerm.style.display = "flex";
+            surveyData.answers.other_term = termInput.value !== '' ? parseInt(termInput.value) : null;
+        }
+        validateForm();
+    }
+
+    function validateForm() {
+        const ans = surveyData.answers;
+        let isValid = true;
+
+        if (!ans.loan_type) isValid = false;
+        if (!ans.marital_status) isValid = false;
+        if (!ans.has_baby) isValid = false;
+        if (!ans.children_count) isValid = false;
+        if (!ans.is_dual_income) isValid = false;
+        if (!ans.age_group) isValid = false;
+        if (!ans.home_ownership) isValid = false;
+        if (!ans.region_type) isValid = false;
+        if (ans.income === null) isValid = false;
+        if (ans.assets === null) isValid = false;
+        if (ans.price === null || ans.price <= 0) isValid = false;
+
+        if (ans.other_amt === null || ans.other_rate === null) {
+            isValid = false;
+        } else if (ans.loan_kind === '일반대출' && ans.other_amt > 0 && ans.other_term === null) {
+            isValid = false;
+        }
+
+        const submitBtn = document.getElementById('submit-btn');
+        if (isValid) {
+            submitBtn.classList.add('active');
+            submitBtn.removeAttribute('disabled');
+        } else {
+            submitBtn.classList.remove('active');
+            submitBtn.setAttribute('disabled', 'true');
+        }
+    }
+
+    function calcAnnualRepayment(principalInWon, annualRate, years) {
+        if (principalInWon <= 0 || annualRate <= 0 || years <= 0) return 0;
+        const monthlyRate = annualRate / 12 / 100;
+        const months = years * 12;
+        const monthlyRepayment = (principalInWon * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+        return monthlyRepayment * 12;
+    }
+
+    function updateLiveRepayment(years) {
+        surveyData.calculated.currentSelectedTerm = years;
+        
+        const ans = surveyData.answers;
+        const isDual = (ans.is_dual_income === '맞벌이');
+        const isReg = (ans.region_type === '규제');
+
+        surveyData.calculated.validProductsList.forEach(p => {
+            if (p.id === 'newborn') {
+                p.rate = rateTable.newborn.getRate(ans.income, isDual, years);
+            } else if (p.id === 'honeymoon') {
+                p.rate = rateTable.honeymoon.getRate(ans.income, years);
+            } else if (p.id === 'didimdol') {
+                p.rate = rateTable.didimdol.getRate(ans.income, years);
+            } else if (p.id === 'bogeum') {
+                p.rate = rateTable.bogeum.getRate(ans.income, years);
+            } else if (p.id === 'commercial') {
+                p.rate = rateTable.commercial.getRate(ans.income, isReg, years);
+                
+                const userIncomeInWon = ans.income * 10000;
+                const maxAllowedDsrAnnualRepayment = Math.max(0, (userIncomeInWon * 0.4) - surveyData.calculated.existingAnnualRepayment);
+                
+                let dsrLimit = 0;
+                const mRate = p.rate / 12 / 100;
+                const mMonths = years * 12;
+                if (maxAllowedDsrAnnualRepayment > 0 && mRate > 0) {
+                    dsrLimit = ((maxAllowedDsrAnnualRepayment / 12) * (Math.pow(1 + mRate, mMonths) - 1)) / (mRate * Math.pow(1 + mRate, mMonths)) / 100000000;
+                }
+                p.dsrLimit = dsrLimit;
+                p.finalLimit억원 = Math.min(dsrLimit, p.maxLoanByLtvIn억원, p.maxLoanByPriceLimit);
+            }
+            const pInWon = p.finalLimit억원 * 100000000;
+            p.annualRepayment = calcAnnualRepayment(pInWon, p.rate, years);
+        });
+
+        if (ans.loan_type === '기금') {
+            surveyData.calculated.validProductsList.sort((a, b) => a.rate - b.rate);
+        }
+        renderProductsUI(years);
+    }
+
+    function renderProductsUI(currentTerm) {
+        const products = surveyData.calculated.validProductsList;
+        const ans = surveyData.answers;
+        const outputDiv = document.getElementById('calculator-output');
+        
+        // 정책대출 미적격 시 폴백 처리 
+        if (ans.loan_type === '기금' && products.length === 0) {
+            outputDiv.innerHTML = `
+                <div class="fallback-card">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">📋 정책대출 신청 가능 상품 없음</h3>
+                    <p style="font-size: 14px; line-height: 1.5; margin-bottom: 12px;">
+                        현재 입력하신 조건으로는 신청 가능한 정부 정책대출 상품이 확인되지 않았습니다.<br>
+                        일반 은행 주택담보대출 기준으로 예상 대출 가능 금액과 월 상환금을 우회 계산해볼 수 있습니다.
+                    </p>
+                    <button type="button" class="btn-fallback" onclick="convertToCommercialFlow()">시중은행 대출 금액 계산하기</button>
+                </div>
+            `;
+            return;
+        }
+
+        const bestProd = products[0]; 
+        let html = "";
+
+        if (ans.loan_type === '시중') {
+            html += `
+                <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 14px; margin-top: 16px; margin-bottom: 6px;">
+                    <div style="font-weight: bold; font-size: 15px; color: #2b6cb0; margin-bottom: 4px;">
+                        🏦 일반 시중은행 주택담보대출 가이드라인 분석
+                    </div>
+                    <div style="font-size:13px; color:#4a5568;">
+                        최대 대출기간 적용: <b>${ans.region_type === '규제' ? '30년' : '40년'} 만기 제한</b> (${ans.region_type}지역 가이드라인)
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `
+            <div class="result-box">
+                <div style="font-size:14px; color:#2f855a; font-weight:bold;">🥇 BEST 최적 매칭 대출 상품 (${currentTerm}년 만기 기준)</div>
+                <div style="font-size:20px; font-weight:700; margin:6px 0;">${bestProd.name}</div>
+                
+                <div style="background-color:#ffffff; border:1px solid var(--result-border); padding:16px; text-align:center; margin:14px 0;">
+                    <div style="font-size:14px; color:#4a5568;">최대 예상 대출 가능 금액</div>
+                    <div class="result-highlight">약 ${bestProd.finalLimit억원.toFixed(1)}억 원 이내</div>
+                    <div style="font-size:12px; color:var(--text-desc);">
+                        (주택 규제구간 한도, LTV 비율, DSR 상한선을 종합 연산한 종합 최종 스펙)
+                    </div>
+                </div>
+        `;
+
+        if (ans.loan_type === '시중') {
+            html += `
+                <div style="background-color:#ffffff; border: 1px solid #e2e8f0; padding:14px; margin-bottom:12px;">
+                    <div style="font-size:13px; font-weight:700; color:#2d3748; margin-bottom:8px; border-bottom:1px solid #edf2f7; padding-bottom:4px;">📋 대출 산출 근거 내역</div>
+                    <div style="font-size:13px; color:#4a5568; display:flex; flex-direction:column; gap:4px;">
+                        <div style="display:flex; justify-content:space-between;"><span>• 주택가격별 한도 가이드:</span><span style="font-weight:600;">${bestProd.maxLoanByPriceLimit === Infinity ? '해당사항 없음' : bestProd.maxLoanByPriceLimit.toFixed(1) + '억원'}</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>• LTV 상한 한도 (${bestProd.appliedLtvPercent}%):</span><span style="font-weight:600;">${bestProd.maxLoanByLtvIn억원.toFixed(1)}억원</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>• DSR 한도 한계선:</span><span style="font-weight:600;">${bestProd.dsrLimit.toFixed(1)}억원</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-top:4px; padding-top:4px; border-top:1px dashed #e2e8f0; font-weight:700; color: #2b6cb0;">
+                            <span>▶ 연동 최종 가능 금액:</span><span>${bestProd.finalLimit억원.toFixed(1)}억원</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `
+                <div style="background-color:#ffffff; border: 1px solid #e2e8f0; padding:12px;">
+                    <div style="font-size:13px; color:#dd6b20; font-weight:bold; display:flex; justify-content:space-between;">
+                        📈 예상 적용 기본 금리 <span>연 ${bestProd.rate.toFixed(2)}%</span>
+                    </div>
+                    <div style="font-size:13px; color:var(--text-main); line-height:1.5; margin-top:6px;">
+                        <b>[추천사유]</b> ${bestProd.reason}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        html += `
+            <div class="result-sub-card">
+                <div style="font-size:14px; font-weight:bold; color:#2d3748; margin-bottom:8px; border-bottom:1px solid #edf2f7; padding-bottom:4px;">📊 대출 규제 비율 및 핵심 지표 리포트</div>
+                <div style="font-size:13px; color:#4a5568; display:flex; flex-direction:column; gap:6px;">
+                    <div style="display:flex; justify-content:space-between;"><span>• 최종 적용 LTV 비율</span><span style="font-weight:bold;">${bestProd.appliedLtvPercent || (ans.home_ownership === '생애최초' && ans.region_type === '비규제' ? 80 : 70)}%</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 가이드 DTI 비율</span><span>60% 이내 충족</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 규제 기준 DSR 비율</span><span style="color:#2b6cb0; font-weight:bold;">40.0% 상한 필터 적용</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 최종 연산 적용 만기</span><span style="color:#2f855a; font-weight:bold;">${currentTerm}년 상환 설정</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 타기관 대출 반영 방식</span><span>${ans.loan_kind} ${ans.loan_kind === '마이너스통장' ? '(5년 균등 규정산입)' : ''}</span></div>
+                </div>
+            </div>
+        `;
+
+        if (ans.loan_type === '기금') {
+            html += `
+                <div class="result-sub-card">
+                    <div style="font-size:14px; font-weight:bold; margin-bottom:8px;">🔍 신청 가능한 대출 상품 전체 리스트 (낮은금리순)</div>
+            `;
+            products.forEach((p, idx) => {
+                const isBest = (idx === 0);
+                html += `
+                    <div class="product-item-card ${isBest ? 'best' : ''}">
+                        <div style="display:flex; justify-content: space-between; align-items:center; width:100%;">
+                            <span style="font-weight:bold; font-size:14px; color:${isBest ? '#2e7d32':'var(--text-main)'};">
+                                ${isBest ? '⭐ ' : ''}${p.name}
+                            </span>
+                            <span class="badge ${isBest ? 'badge-success' : 'badge-warning'}">연 ${p.rate.toFixed(2)}%</span>
+                        </div>
+                        <div style="font-size:12px; color:#666666; margin-top:4px; line-height:1.4;">
+                            • 최대한도: <b>약 ${p.finalLimit억원.toFixed(1)}억원</b> 이내<br>
+                            • 매칭조건: ${p.reason}
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+        }
+
+        const monthlyExisting = (surveyData.calculated.existingAnnualRepayment / 12) / 10000;
+        const monthlyNew = (bestProd.annualRepayment / 12) / 10000;
+        const totalMonthly = monthlyExisting + monthlyNew;
+
+        let radioButtonsHtml = '<div class="term-radio-grid">';
+        const termsToRender = [10, 20, 30, 40, 50];
+        termsToRender.forEach(t => {
+            const isSupported = bestProd.allowedTerms.includes(t);
+            if (isSupported) {
+                const isSelected = (t === currentTerm) ? "selected" : "";
+                radioButtonsHtml += `<div class="term-btn ${isSelected}" onclick="updateLiveRepayment(${t})">${t}년 만기</div>`;
+            } else {
+                radioButtonsHtml += `<div class="term-btn disabled" title="지원하지 않는 만기입니다.">${t}년 불가</div>`;
+            }
+        });
+        radioButtonsHtml += '</div>';
+
+        html += `
+            <div class="result-sub-card" style="border-left: 4px solid var(--point-blue);">
+                <div style="font-size:14px; font-weight:bold; color:#2d3748;">
+                    💸 예상 원리금 상환 및 만기 기간 변경 시뮬레이션
+                </div>
+                
+                ${radioButtonsHtml}
+
+                <div style="font-size:16px; font-weight:700; color:var(--text-main); margin:12px 0 6px 0;">
+                    선택 상품 월 총합 상환액 : <span style="color:#2b6cb0;">약 ${totalMonthly.toFixed(0)}만 원</span>
+                </div>
+                <div style="font-size:13px; color:var(--text-desc); padding-left:2px; line-height:1.6;">
+                    └ 기존 보유대출 원리금 매월 : <span>약 ${monthlyExisting.toFixed(0)}만 원</span><br>
+                    └ 신규 주담대 원리금 매월 : <span style="color:#2f855a; font-weight:bold;">약 ${monthlyNew.toFixed(0)}만 원</span> <span style="font-size:11px; color:#718096;">(${currentTerm}년 만기 기준)</span>
+                </div>
+            </div>
+        `;
+
+        const neededSelfFunds = Math.max(0, ans.price - bestProd.finalLimit억원);
+        html += `
+            <div class="result-sub-card">
+                <div style="font-size:14px; font-weight:bold; color:#2d3748; margin-bottom:4px;">
+                    💰 추가 조달 필요 자금 산정
+                </div>
+                <div style="font-size:16px; font-weight:700;">
+                    필요한 자기자금(준비금) 규모 : <span style="color:#e53e3e;">약 ${neededSelfFunds.toFixed(1)}억 원</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-desc); margin-top:2px;">
+                    (목표 주택가격 ${ans.price.toFixed(1)}억 원 - 대출 가용 금액 한도값 차감)
+                </div>
+            </div>
+            <div class="text-info-card">
+                ※ 위의 대출 계산 결과는 가용 데이터 기반 시뮬레이션 수치이므로 가산 금리 수취 조건 및 우대 조건 충족 여부에 따라 실제 시중 창구 심사 결과와 소폭 다를 수 있습니다.
+            </div>
+        `;
+
+        outputDiv.innerHTML = html;
+    }
+
+    function convertToCommercialFlow() {
+        surveyData.answers.loan_type = '시중';
+        
+        // 라디오 UI도 동기화 변경
+        const typeRadios = document.getElementsByName('loan_type');
+        for (let r of typeRadios) {
+            if (r.value === '시중') r.checked = true;
+        }
+        
+        runAnalysis();
+    }
+
+    function runAnalysis() {
+        // 결과창 노출 및 초기 세팅
+        const resultSection = document.getElementById('result-section');
+        resultSection.style.display = 'block';
+
+        const ans = surveyData.answers;
+        if (ans.loan_type === '시중') {
+            surveyData.calculated.currentSelectedTerm = (ans.region_type === '규제') ? 30 : 40;
+        }
+        const currentTerm = surveyData.calculated.currentSelectedTerm;
+
+        const hasSpouse = (ans.marital_status === '신혼' || ans.marital_status === '기혼');
+        const isFirstHome = (ans.home_ownership === '생애최초');
+        const isDual = (ans.is_dual_income === '맞벌이');
+        const childCount = parseInt(ans.children_count || '0');
+        const isReg = (ans.region_type === '규제');
+
+        const userIncomeInWon = ans.income * 10000; 
+        const existingPrincipalInWon = (ans.other_amt || 0) * 100000000; 
+
+        let existingAnnualRepayment = 0;
+        if (ans.loan_kind === '마이너스통장') {
+            existingAnnualRepayment = (existingPrincipalInWon / 5) + (existingPrincipalInWon * ((ans.other_rate || 0) / 100));
+        } else {
+            existingAnnualRepayment = calcAnnualRepayment(existingPrincipalInWon, (ans.other_rate || 0), (ans.other_term || 0));
+        }
+        surveyData.calculated.existingAnnualRepayment = existingAnnualRepayment;
+
+        const maxAllowedDsrAnnualRepayment = Math.max(0, (userIncomeInWon * 0.4) - existingAnnualRepayment);
+        
+        function getDsrLimit(rate, termYears) {
+            const mRate = rate / 12 / 100;
+            const mMonths = termYears * 12;
+            if (maxAllowedDsrAnnualRepayment <= 0 || mRate <= 0) return 0;
+            const maxLoanInWon = ( (maxAllowedDsrAnnualRepayment / 12) * (Math.pow(1 + mRate, mMonths) - 1) ) / (mRate * Math.pow(1 + mRate, mMonths));
+            return maxLoanInWon / 100000000;
+        }
+
+        let validProducts = [];
+
+        if (ans.loan_type === '기금') {
+            let allowedLtvLimit = 70;
+            if (isFirstHome && !isReg) {
+                allowedLtvLimit = 80;
+            }
+            const maxLoanByLtvIn억원 = ans.price * (allowedLtvLimit / 100);
+
+            let newbornLimitIncome = isDual ? 20000 : 13000; 
+            if (ans.has_baby === '예' && ans.assets <= 51100 && ans.price <= 9.0 && ans.income <= newbornLimitIncome) {
+                const pRate = rateTable.newborn.getRate(ans.income, isDual, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, 4.0); 
+                
+                validProducts.push({
+                    id: 'newborn',
+                    name: '👶 신생아 특례 디딤돌 대출',
+                    rate: pRate,
+                    finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30],
+                    reason: `출산 요건 및 기금 순자산 자격 조건 완화 기준을 만족하여 정부 우대 특례금리가 매칭되었습니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm),
+                    appliedLtvPercent: allowedLtvLimit
+                });
+            }
+
+            if (ans.marital_status === '신혼' && ans.income <= 8500 && ans.price <= 6.0 && ans.assets <= 51100) {
+                const pRate = rateTable.honeymoon.getRate(ans.income, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, 3.2); 
+                
+                validProducts.push({
+                    id: 'honeymoon',
+                    name: '👩‍❤️‍👨 신혼부부 전용 구입자금 대출',
+                    rate: pRate,
+                    finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30],
+                    reason: `혼인기간 7년 이내 신혼가구 소득 조건 충족 가이드에 따라 기금 전용 금리가 적용되었습니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm),
+                    appliedLtvPercent: allowedLtvLimit
+                });
+            }
+
+            let didimdolIncomeCut = 6000; 
+            if (ans.marital_status === '신혼') didimdolIncomeCut = 8500;
+            else if (isFirstHome) didimdolIncomeCut = 7000;
+
+            if (ans.price <= 6.0 && ans.assets <= 51100 && ans.income <= didimdolIncomeCut) {
+                const pRate = rateTable.didimdol.getRate(ans.income, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                
+                let maxDidimLimit = 2.0;
+                if (ans.marital_status === '신혼' || childCount >= 2) {
+                    maxDidimLimit = 3.2;
+                } else if (isFirstHome) {
+                    maxDidimLimit = 2.4;
+                }
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, maxDidimLimit);
+
+                validProducts.push({
+                    id: 'didimdol',
+                    name: '🌱 일반 내집마련 디딤돌 대출',
+                    rate: pRate,
+                    finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30],
+                    reason: `자산 검증 통과 및 무주택 세대주 요건 부합으로 주택도시기금 기본 금리를 할당받았습니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm),
+                    appliedLtvPercent: allowedLtvLimit
+                });
+            }
+
+            let bogeumIncomeCut = 7000; 
+            if (ans.marital_status === '신혼') bogeumIncomeCut = 8500;
+            else if (childCount === 1) bogeumIncomeCut = 8000;
+            else if (childCount === 2) bogeumIncomeCut = 9000;
+            else if (childCount >= 3) bogeumIncomeCut = 10000;
+
+            if (ans.price <= 6.0 && ans.income <= bogeumIncomeCut) {
+                const pRate = rateTable.bogeum.getRate(ans.income, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                
+                let maxBogeumLimit = 3.6;
+                if (isFirstHome) {
+                    maxBogeumLimit = 4.2;
+                } else if (childCount >= 3) {
+                    maxBogeumLimit = 4.0;
+                }
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, maxBogeumLimit);
+
+                validProducts.push({
+                    id: 'bogeum',
+                    name: '🏢 아낌e 보금자리론',
+                    rate: pRate,
+                    finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30, 40, 50],
+                    reason: `한국주택금융공사 소득 기준 한도 조건을 만족하여 장기 고정금리형 상품 이용이 성립됩니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm),
+                    appliedLtvPercent: allowedLtvLimit
+                });
+            }
+        } else {
+            let maxLoanByPriceLimit = Infinity;
+            if (isReg) {
+                maxLoanByPriceLimit = 6.0;
+                if (ans.price > 15.0 && ans.price <= 25.0) {
+                    maxLoanByPriceLimit = 4.0;
+                } else if (ans.price > 25.0) {
+                    maxLoanByPriceLimit = 2.0;
+                }
+            }
+
+            let commLtvPercent = 70;
+            if (ans.home_ownership === '생애최초') {
+                commLtvPercent = isReg ? 70 : 80;
+            } else if (ans.home_ownership === '일시적 2주택' || ans.home_ownership === '무주택(과거 주택 보유이력o)') {
+                commLtvPercent = isReg ? 50 : 70;
+            } else if (ans.home_ownership === '1주택 이상 보유') {
+                commLtvPercent = isReg ? 30 : 60; 
+            }
+
+            const commMaxLoanByLtv = ans.price * (commLtvPercent / 100);
+            const pRate = rateTable.commercial.getRate(ans.income, isReg, currentTerm);
+            const dsrLimit = getDsrLimit(pRate, currentTerm);
+            let allowedTermsArray = isReg ? [10, 15, 20, 30] : [10, 15, 20, 30, 40];
+            let finalLimitWithDeduction = Math.min(dsrLimit, commMaxLoanByLtv, maxLoanByPriceLimit);
+
+            validProducts.push({
+                id: 'commercial',
+                name: '🏦 시중은행 일반 주택담보대출',
+                rate: pRate,
+                finalLimit억원: finalLimitWithDeduction,
+                maxLoanByPriceLimit: maxLoanByPriceLimit,
+                maxLoanByLtvIn억원: commMaxLoanByLtv,
+                appliedLtvPercent: commLtvPercent,
+                dsrLimit: dsrLimit,
+                allowedTerms: allowedTermsArray,
+                reason: `선택하신 주택 소유 유무별 가이드라인 및 금융위원회 총부채원리금상환비율(DSR) 한도를 준수한 금융권 대출 결과입니다.`,
+                annualRepayment: calcAnnualRepayment(finalLimitWithDeduction * 100000000, pRate, currentTerm)
+            });
+        }
+
+        surveyData.calculated.validProductsList = validProducts;
+        renderProductsUI(currentTerm);
+
+        // 결과 영역으로 부드럽게 스크롤 이동
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+</script>
+</body>
+</html>
