@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맞춤 분석 결과 리포트</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --container-bg: #ffffff;
+            --text-main: #222222;
+            --text-desc: #666666;
+            --border-color: #cccccc;
+            --point-blue: #3182ce;
+            --result-bg: #ebf8ff;
+            --result-border: #bee3f8;
+            --card-sub-bg: #f7fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #f4f6f9; color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; padding: 40px 20px; }
+        .form-container { max-width: 700px; margin: 0 auto; background-color: var(--container-bg); padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .main-title { font-size: 24px; font-weight: 700; color: #2b6cb0; border-bottom: 2px dashed #bee3f8; padding-bottom: 12px; margin-bottom: 20px; }
+        .result-box { background-color: var(--result-bg); border: 1px solid var(--result-border); padding: 24px; margin-top: 20px; color: #2c5282; }
+        .result-sub-card { background-color: var(--card-sub-bg); border: 1px solid #e2e8f0; padding: 18px; margin-top: 16px; color: var(--text-main); }
+        .result-highlight { color: #2b6cb0; font-size: 22px; font-weight: 700; margin: 10px 0; }
+        .text-info-card { font-size: 13px; color: var(--text-desc); background-color: #edf2f7; padding: 12px; line-height: 1.5; margin-top: 16px; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 6px; }
+        .badge-success { background-color: #2f855a; color: #fff; }
+        .badge-warning { background-color: #c05621; color: #fff; }
+        .term-radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin: 12px 0; }
+        .term-btn { background-color: #ffffff; border: 1px solid var(--border-color); color: #4a5568; padding: 10px 4px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.15s; }
+        .term-btn.selected { background-color: #ebf8ff; border-color: var(--point-blue); color: var(--point-blue); }
+        .term-btn.disabled { opacity: 0.35; cursor: not-allowed; background-color: #edf2f7; color: #a0aec0; }
+        .product-item-card { background-color: #ffffff; border: 1px solid #e2e8f0; padding: 14px; margin-top: 12px; }
+        .product-item-card.best { border: 2px solid #38a169; background-color: #f0fff4; }
+        .fallback-card { background-color: #fffaf0; border: 1px solid #feebc8; padding: 24px; text-align: center; margin-top: 16px; color: #744210; }
+        .btn-fallback { width: 100%; max-width: 260px; height: 48px; background-color: #dd6b20; color: white; border: none; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 16px; }
+        .btn-fallback:hover { background-color: #c05621; }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #4a5568; text-decoration: none; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <a href="calculator.html" class="btn-back">⬅️ 다시 계산하기</a>
+    <h1 class="main-title">🎯 맞춤 분석 결과 리포트</h1>
+    <div id="calculator-output"></div>
+</div>
+
+<script>
+    // URL에서 파라미터 값 추출 및 자료형 복원
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    let surveyData = {
+        answers: {
+            loan_type: urlParams.get('loan_type') || '',
+            marital_status: urlParams.get('marital_status') || '',
+            has_baby: urlParams.get('has_baby') || '',
+            children_count: urlParams.get('children_count') || '',
+            is_dual_income: urlParams.get('is_dual_income') || '',
+            age_group: urlParams.get('age_group') || '',
+            home_ownership: urlParams.get('home_ownership') || '',
+            region_type: urlParams.get('region_type') || '',
+            income: urlParams.get('income') ? parseFloat(urlParams.get('income')) : null,
+            assets: urlParams.get('assets') ? parseFloat(urlParams.get('assets')) : null,
+            price: urlParams.get('price') ? parseFloat(urlParams.get('price')) : null,
+            loan_kind: urlParams.get('loan_kind') || '일반대출',
+            other_amt: urlParams.get('other_amt') ? parseFloat(urlParams.get('other_amt')) : 0,
+            other_rate: urlParams.get('other_rate') ? parseFloat(urlParams.get('other_rate')) : 0,
+            other_term: urlParams.get('other_term') ? parseInt(urlParams.get('other_term')) : 0
+        },
+        calculated: {
+            validProductsList: [],
+            currentSelectedTerm: 30,
+            existingAnnualRepayment: 0
+        }
+    };
+
+    const rateTable = {
+        newborn: {
+            getRate: function(income, isDual, term) {
+                let base = 2.05;
+                if (!isDual) {
+                    if (income <= 2000) base = 2.05;
+                    else if (income <= 4000) base = 2.40;
+                    else if (income <= 6000) base = 2.65;
+                    else if (income <= 8500) base = 2.90;
+                    else if (income <= 10000) base = 3.20;
+                    else if (income <= 13000) base = 3.50;
+                } else {
+                    if (income <= 2000) base = 2.05;
+                    else if (income <= 4000) base = 2.40;
+                    else if (income <= 6000) base = 2.65;
+                    else if (income <= 8500) base = 2.90;
+                    else if (income <= 10000) base = 3.20;
+                    else if (income <= 13000) base = 3.50;
+                    else if (income <= 15000) base = 3.80;
+                    else if (income <= 17000) base = 4.15;
+                    else if (income <= 20000) base = 4.50;
+                }
+                if (term <= 10) return base - 0.25;
+                if (term <= 15) return base - 0.15;
+                if (term <= 20) return base - 0.05;
+                return base; 
+            }
+        },
+        honeymoon: {
+            getRate: function(income, term) {
+                let base = 3.50;
+                if (income <= 2000) base = 2.80;
+                else if (income <= 4000) base = 3.15;
+                else if (income <= 7000) base = 3.50;
+                else if (income <= 8500) base = 3.85;
+                if (term <= 10) return base - 0.25;
+                if (term <= 15) return base - 0.15;
+                if (term <= 20) return base - 0.05;
+                return base;
+            }
+        },
+        didimdol: {
+            getRate: function(income, term) {
+                let base = 4.15;
+                if (income <= 2000) base = 3.10;
+                else if (income <= 4000) base = 3.45;
+                else if (income <= 7000) base = 3.90;
+                else if (income <= 8500) base = 4.15;
+                if (term <= 10) return base - 0.25;
+                if (term <= 15) return base - 0.15;
+                if (term <= 20) return base - 0.05;
+                return base;
+            }
+        },
+        bogeum: {
+            getRate: function(income, term) {
+                let base = 4.35;
+                if (term <= 10) base = 4.05;
+                else if (term <= 15) base = 4.15;
+                else if (term <= 20) base = 4.20;
+                else if (term <= 30) base = 4.25;
+                else if (term <= 40) base = 4.30;
+                else base = 4.35;
+                return base;
+            }
+        },
+        commercial: {
+            getRate: function(income, isReg, term) {
+                let base = 4.15;
+                if (income <= 6000) base = 3.95;
+                else if (income <= 9000) base = 4.15;
+                else base = 4.40;
+                if (isReg) base += 0.1;
+                return base;
+            }
+        }
+    };
+
+    function calcAnnualRepayment(principalInWon, annualRate, years) {
+        if (principalInWon <= 0 || annualRate <= 0 || years <= 0) return 0;
+        const monthlyRate = annualRate / 12 / 100;
+        const months = years * 12;
+        return ((principalInWon * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1)) * 12;
+    }
+
+    function updateLiveRepayment(years) {
+        surveyData.calculated.currentSelectedTerm = years;
+        const ans = surveyData.answers;
+        const isDual = (ans.is_dual_income === '맞벌이');
+        const isReg = (ans.region_type === '규제');
+
+        surveyData.calculated.validProductsList.forEach(p => {
+            if (p.id === 'newborn') {
+                p.rate = rateTable.newborn.getRate(ans.income, isDual, years);
+            } else if (p.id === 'honeymoon') {
+                p.rate = rateTable.honeymoon.getRate(ans.income, years);
+            } else if (p.id === 'didimdol') {
+                p.rate = rateTable.didimdol.getRate(ans.income, years);
+            } else if (p.id === 'bogeum') {
+                p.rate = rateTable.bogeum.getRate(ans.income, years);
+            } else if (p.id === 'commercial') {
+                p.rate = rateTable.commercial.getRate(ans.income, isReg, years);
+                const userIncomeInWon = ans.income * 10000;
+                const maxAllowedDsrAnnualRepayment = Math.max(0, (userIncomeInWon * 0.4) - surveyData.calculated.existingAnnualRepayment);
+                let dsrLimit = 0;
+                const mRate = p.rate / 12 / 100;
+                const mMonths = years * 12;
+                if (maxAllowedDsrAnnualRepayment > 0 && mRate > 0) {
+                    dsrLimit = ((maxAllowedDsrAnnualRepayment / 12) * (Math.pow(1 + mRate, mMonths) - 1)) / (mRate * Math.pow(1 + mRate, mMonths)) / 100000000;
+                }
+                p.dsrLimit = dsrLimit;
+                p.finalLimit억원 = Math.min(dsrLimit, p.maxLoanByLtvIn억원, p.maxLoanByPriceLimit);
+            }
+            p.annualRepayment = calcAnnualRepayment(p.finalLimit억원 * 100000000, p.rate, years);
+        });
+
+        if (ans.loan_type === '기금') {
+            surveyData.calculated.validProductsList.sort((a, b) => a.rate - b.rate);
+        }
+        renderProductsUI(years);
+    }
+
+    function renderProductsUI(currentTerm) {
+        const products = surveyData.calculated.validProductsList;
+        const ans = surveyData.answers;
+        const outputDiv = document.getElementById('calculator-output');
+        
+        if (ans.loan_type === '기금' && products.length === 0) {
+            outputDiv.innerHTML = `
+                <div class="fallback-card">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">📋 정책대출 신청 가능 상품 없음</h3>
+                    <p style="font-size: 14px; line-height: 1.5; margin-bottom: 12px;">
+                        현재 입력하신 조건으로는 신청 가능한 정부 정책대출 상품이 확인되지 않았습니다.<br>
+                        일반 은행 주택담보대출 기준으로 예상 대출 가능 금액과 월 상환금을 우회 계산해볼 수 있습니다.
+                    </p>
+                    <button type="button" class="btn-fallback" onclick="convertToCommercialFlow()">시중은행 대출 금액 계산하기</button>
+                </div>
+            `;
+            return;
+        }
+
+        const bestProd = products[0]; 
+        let html = "";
+
+        if (ans.loan_type === '시중') {
+            html += `
+                <div style="background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 14px; margin-top: 16px; margin-bottom: 6px;">
+                    <div style="font-weight: bold; font-size: 15px; color: #2b6cb0; margin-bottom: 4px;">🏦 일반 시중은행 주택담보대출 가이드라인 분석</div>
+                    <div style="font-size:13px; color:#4a5568;">최대 대출기간 적용: <b>${ans.region_type === '규제' ? '30년' : '40년'} 만기 제한</b> (${ans.region_type}지역 가이드라인)</div>
+                </div>
+            `;
+        }
+
+        html += `
+            <div class="result-box">
+                <div style="font-size:14px; color:#2f855a; font-weight:bold;">🥇 BEST 최적 매칭 대출 상품 (${currentTerm}년 만기 기준)</div>
+                <div style="font-size:20px; font-weight:700; margin:6px 0;">${bestProd.name}</div>
+                <div style="background-color:#ffffff; border:1px solid var(--result-border); padding:16px; text-align:center; margin:14px 0;">
+                    <div style="font-size:14px; color:#4a5568;">최대 예상 대출 가능 금액</div>
+                    <div class="result-highlight">약 ${bestProd.finalLimit억원.toFixed(1)}억 원 이내</div>
+                    <div style="font-size:12px; color:var(--text-desc);">(주택 규제구간 한도, LTV 비율, DSR 상한선을 종합 연산한 종합 최종 스펙)</div>
+                </div>
+        `;
+
+        if (ans.loan_type === '시중') {
+            html += `
+                <div style="background-color:#ffffff; border: 1px solid #e2e8f0; padding:14px; margin-bottom:12px;">
+                    <div style="font-size:13px; font-weight:700; color:#2d3748; margin-bottom:8px; border-bottom:1px solid #edf2f7; padding-bottom:4px;">📋 대출 산출 근거 내역</div>
+                    <div style="font-size:13px; color:#4a5568; display:flex; flex-direction:column; gap:4px;">
+                        <div style="display:flex; justify-content:space-between;"><span>• 주택가격별 한도 가이드:</span><span style="font-weight:600;">${bestProd.maxLoanByPriceLimit === Infinity ? '해당사항 없음' : bestProd.maxLoanByPriceLimit.toFixed(1) + '억원'}</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>• LTV 상한 한도 (${bestProd.appliedLtvPercent}%):</span><span style="font-weight:600;">${bestProd.maxLoanByLtvIn억원.toFixed(1)}억원</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>• DSR 한도 한계선:</span><span style="font-weight:600;">${bestProd.dsrLimit.toFixed(1)}억원</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-top:4px; padding-top:4px; border-top:1px dashed #e2e8f0; font-weight:700; color: #2b6cb0;">
+                            <span>▶ 연동 최종 가능 금액:</span><span>${bestProd.finalLimit억원.toFixed(1)}억원</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `
+                <div style="background-color:#ffffff; border: 1px solid #e2e8f0; padding:12px;">
+                    <div style="font-size:13px; color:#dd6b20; font-weight:bold; display:flex; justify-content:space-between;">📈 예상 적용 기본 금리 <span>연 ${bestProd.rate.toFixed(2)}%</span></div>
+                    <div style="font-size:13px; color:var(--text-main); line-height:1.5; margin-top:6px;"><b>[추천사유]</b> ${bestProd.reason}</div>
+                </div>
+            </div>
+        `;
+
+        html += `
+            <div class="result-sub-card">
+                <div style="font-size:14px; font-weight:bold; color:#2d3748; margin-bottom:8px; border-bottom:1px solid #edf2f7; padding-bottom:4px;">📊 대출 규제 비율 및 핵심 지표 리포트</div>
+                <div style="font-size:13px; color:#4a5568; display:flex; flex-direction:column; gap:6px;">
+                    <div style="display:flex; justify-content:space-between;"><span>• 최종 적용 LTV 비율</span><span style="font-weight:bold;">${bestProd.appliedLtvPercent || (ans.home_ownership === '생애최초' && ans.region_type === '비규제' ? 80 : 70)}%</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 가이드 DTI 비율</span><span>60% 이내 충족</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 규제 기준 DSR 비율</span><span style="color:#2b6cb0; font-weight:bold;">40.0% 상한 필터 적용</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 최종 연산 적용 만기</span><span style="color:#2f855a; font-weight:bold;">${currentTerm}년 상환 설정</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>• 타기관 대출 반영 방식</span><span>${ans.loan_kind} ${ans.loan_kind === '마이너스통장' ? '(5년 균등 규정산입)' : ''}</span></div>
+                </div>
+            </div>
+        `;
+
+        if (ans.loan_type === '기금') {
+            html += `
+                <div class="result-sub-card">
+                    <div style="font-size:14px; font-weight:bold; margin-bottom:8px;">🔍 신청 가능한 대출 상품 전체 리스트 (낮은금리순)</div>
+            `;
+            products.forEach((p, idx) => {
+                const isBest = (idx === 0);
+                html += `
+                    <div class="product-item-card ${isBest ? 'best' : ''}">
+                        <div style="display:flex; justify-content: space-between; align-items:center; width:100%;">
+                            <span style="font-weight:bold; font-size:14px; color:${isBest ? '#2e7d32':'var(--text-main)'};">${isBest ? '⭐ ' : ''}${p.name}</span>
+                            <span class="badge ${isBest ? 'badge-success' : 'badge-warning'}">연 ${p.rate.toFixed(2)}%</span>
+                        </div>
+                        <div style="font-size:12px; color:#666666; margin-top:4px; line-height:1.4;">
+                            • 최대한도: <b>약 ${p.finalLimit억원.toFixed(1)}억원</b> 이내<br>
+                            • 매칭조건: ${p.reason}
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+        }
+
+        const monthlyExisting = (surveyData.calculated.existingAnnualRepayment / 12) / 10000;
+        const monthlyNew = (bestProd.annualRepayment / 12) / 10000;
+        const totalMonthly = monthlyExisting + monthlyNew;
+
+        let radioButtonsHtml = '<div class="term-radio-grid">';
+        [10, 20, 30, 40, 50].forEach(t => {
+            if (bestProd.allowedTerms.includes(t)) {
+                const isSelected = (t === currentTerm) ? "selected" : "";
+                radioButtonsHtml += `<div class="term-btn ${isSelected}" onclick="updateLiveRepayment(${t})">${t}년 만기</div>`;
+            } else {
+                radioButtonsHtml += `<div class="term-btn disabled" title="지원하지 않는 만기입니다.">${t}년 불가</div>`;
+            }
+        });
+        radioButtonsHtml += '</div>';
+
+        html += `
+            <div class="result-sub-card" style="border-left: 4px solid var(--point-blue);">
+                <div style="font-size:14px; font-weight:bold; color:#2d3748;">💸 예상 원리금 상환 및 만기 기간 변경 시뮬레이션</div>
+                ${radioButtonsHtml}
+                <div style="font-size:16px; font-weight:700; color:var(--text-main); margin:12px 0 6px 0;">선택 상품 월 총합 상환액 : <span style="color:#2b6cb0;">약 ${totalMonthly.toFixed(0)}만 원</span></div>
+                <div style="font-size:13px; color:var(--text-desc); padding-left:2px; line-height:1.6;">
+                    └ 기존 보유대출 원리금 매월 : <span>약 ${monthlyExisting.toFixed(0)}만 원</span><br>
+                    └ 신규 주담대 원리금 매월 : <span style="color:#2f855a; font-weight:bold;">약 ${monthlyNew.toFixed(0)}만 원</span> <span style="font-size:11px; color:#718096;">(${currentTerm}년 만기 기준)</span>
+                </div>
+            </div>
+        `;
+
+        const neededSelfFunds = Math.max(0, ans.price - bestProd.finalLimit억원);
+        html += `
+            <div class="result-sub-card">
+                <div style="font-size:14px; font-weight:bold; color:#2d3748; margin-bottom:4px;">💰 추가 조달 필요 자금 산정</div>
+                <div style="font-size:16px; font-weight:700;">필요한 자기자금(준비금) 규모 : <span style="color:#e53e3e;">약 ${neededSelfFunds.toFixed(1)}억 원</span></div>
+                <div style="font-size:11px; color:var(--text-desc); margin-top:2px;">(목표 주택가격 ${ans.price.toFixed(1)}억 원 - 대출 가용 금액 한도값 차감)</div>
+            </div>
+            <div class="text-info-card">※ 위의 대출 계산 결과는 가용 데이터 기반 시뮬레이션 수치이므로 가산 금리 수취 조건 및 우대 조건 충족 여부에 따라 실제 시중 창구 심사 결과와 소폭 다를 수 있습니다.</div>
+        `;
+
+        outputDiv.innerHTML = html;
+    }
+
+    function convertToCommercialFlow() {
+        surveyData.answers.loan_type = '시중';
+        runAnalysis();
+    }
+
+    function runAnalysis() {
+        const ans = surveyData.answers;
+        if (ans.loan_type === '시중' && surveyData.calculated.validProductsList.length === 0) {
+            surveyData.calculated.currentSelectedTerm = (ans.region_type === '규제') ? 30 : 40;
+        }
+        const currentTerm = surveyData.calculated.currentSelectedTerm;
+
+        const hasSpouse = (ans.marital_status === '신혼' || ans.marital_status === '기혼');
+        const isFirstHome = (ans.home_ownership === '생애최초');
+        const isDual = (ans.is_dual_income === '맞벌이');
+        const childCount = parseInt(ans.children_count || '0');
+        const isReg = (ans.region_type === '규제');
+        const userIncomeInWon = ans.income * 10000; 
+        const existingPrincipalInWon = (ans.other_amt || 0) * 100000000; 
+
+        let existingAnnualRepayment = 0;
+        if (ans.loan_kind === '마이너스통장') {
+            existingAnnualRepayment = (existingPrincipalInWon / 5) + (existingPrincipalInWon * ((ans.other_rate || 0) / 100));
+        } else {
+            existingAnnualRepayment = calcAnnualRepayment(existingPrincipalInWon, (ans.other_rate || 0), (ans.other_term || 0));
+        }
+        surveyData.calculated.existingAnnualRepayment = existingAnnualRepayment;
+
+        const maxAllowedDsrAnnualRepayment = Math.max(0, (userIncomeInWon * 0.4) - existingAnnualRepayment);
+        
+        function getDsrLimit(rate, termYears) {
+            const mRate = rate / 12 / 100;
+            const mMonths = termYears * 12;
+            if (maxAllowedDsrAnnualRepayment <= 0 || mRate <= 0) return 0;
+            return (((maxAllowedDsrAnnualRepayment / 12) * (Math.pow(1 + mRate, mMonths) - 1)) / (mRate * Math.pow(1 + mRate, mMonths))) / 100000000;
+        }
+
+        let validProducts = [];
+
+        if (ans.loan_type === '기금') {
+            let allowedLtvLimit = 70;
+            if (isFirstHome && !isReg) allowedLtvLimit = 80;
+            const maxLoanByLtvIn억원 = ans.price * (allowedLtvLimit / 100);
+
+            let newbornLimitIncome = isDual ? 20000 : 13000; 
+            if (ans.has_baby === '예' && ans.assets <= 51100 && ans.price <= 9.0 && ans.income <= newbornLimitIncome) {
+                const pRate = rateTable.newborn.getRate(ans.income, isDual, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, 4.0); 
+                validProducts.push({
+                    id: 'newborn', name: '👶 신생아 특례 디딤돌 대출', rate: pRate, finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30], appliedLtvPercent: allowedLtvLimit,
+                    reason: `출산 요건 및 기금 순자산 자격 조건 완화 기준을 만족하여 정부 우대 특례금리가 매칭되었습니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm)
+                });
+            }
+
+            if (ans.marital_status === '신혼' && ans.income <= 8500 && ans.price <= 6.0 && ans.assets <= 51100) {
+                const pRate = rateTable.honeymoon.getRate(ans.income, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, 3.2); 
+                validProducts.push({
+                    id: 'honeymoon', name: '👩‍❤️‍👨 신혼부부 전용 구입자금 대출', rate: pRate, finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30], appliedLtvPercent: allowedLtvLimit,
+                    reason: `혼인기간 7년 이내 신혼가구 소득 조건 충족 가이드에 따라 기금 전용 금리가 적용되었습니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm)
+                });
+            }
+
+            let didimdolIncomeCut = 6000; 
+            if (ans.marital_status === '신혼') didimdolIncomeCut = 8500;
+            else if (isFirstHome) didimdolIncomeCut = 7000;
+
+            if (ans.price <= 6.0 && ans.assets <= 51100 && ans.income <= didimdolIncomeCut) {
+                const pRate = rateTable.didimdol.getRate(ans.income, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                let maxDidimLimit = 2.0;
+                if (ans.marital_status === '신혼' || childCount >= 2) maxDidimLimit = 3.2;
+                else if (isFirstHome) maxDidimLimit = 2.4;
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, maxDidimLimit);
+                validProducts.push({
+                    id: 'didimdol', name: '🌱 일반 내집마련 디딤돌 대출', rate: pRate, finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30], appliedLtvPercent: allowedLtvLimit,
+                    reason: `자산 검증 통과 및 무주택 세대주 요건 부합으로 주택도시기금 기본 금리를 할당받았습니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm)
+                });
+            }
+
+            let bogeumIncomeCut = 7000; 
+            if (ans.marital_status === '신혼') bogeumIncomeCut = 8500;
+            else if (childCount === 1) bogeumIncomeCut = 8000;
+            else if (childCount === 2) bogeumIncomeCut = 9000;
+            else if (childCount >= 3) bogeumIncomeCut = 10000;
+
+            if (ans.price <= 6.0 && ans.income <= bogeumIncomeCut) {
+                const pRate = rateTable.bogeum.getRate(ans.income, currentTerm);
+                const dsrLimit = getDsrLimit(pRate, currentTerm);
+                let maxBogeumLimit = 3.6;
+                if (isFirstHome) maxBogeumLimit = 4.2;
+                else if (childCount >= 3) maxBogeumLimit = 4.0;
+                const finalLimit = Math.min(dsrLimit, maxLoanByLtvIn억원, maxBogeumLimit);
+                validProducts.push({
+                    id: 'bogeum', name: '🏢 아낌e 보금자리론', rate: pRate, finalLimit억원: finalLimit,
+                    allowedTerms: [10, 15, 20, 30, 40, 50], appliedLtvPercent: allowedLtvLimit,
+                    reason: `한국주택금융공사 소득 기준 한도 조건을 만족하여 장기 고정금리형 상품 이용이 성립됩니다.`,
+                    annualRepayment: calcAnnualRepayment(finalLimit * 100000000, pRate, currentTerm)
+                });
+            }
+        } else {
+            let maxLoanByPriceLimit = Infinity;
+            if (isReg) {
+                maxLoanByPriceLimit = 6.0;
+                if (ans.price > 15.0 && ans.price <= 25.0) maxLoanByPriceLimit = 4.0;
+                else if (ans.price > 25.0) maxLoanByPriceLimit = 2.0;
+            }
+
+            let commLtvPercent = 70;
+            if (ans.home_ownership === '생애최초') commLtvPercent = isReg ? 70 : 80;
+            else if (ans.home_ownership === '일시적 2주택' || ans.home_ownership === '무주택(과거 주택 보유이력o)') commLtvPercent = isReg ? 50 : 70;
+            else if (ans.home_ownership === '1주택 이상 보유') commLtvPercent = isReg ? 30 : 60; 
+
+            const commMaxLoanByLtv = ans.price * (commLtvPercent / 100);
+            const pRate = rateTable.commercial.getRate(ans.income, isReg, currentTerm);
+            const dsrLimit = getDsrLimit(pRate, currentTerm);
+            let allowedTermsArray = isReg ? [10, 15, 20, 30] : [10, 15, 20, 30, 40];
+            let finalLimitWithDeduction = Math.min(dsrLimit, commMaxLoanByLtv, maxLoanByPriceLimit);
+
+            validProducts.push({
+                id: 'commercial', name: '🏦 시중은행 일반 주택담보대출', rate: pRate, finalLimit억원: finalLimitWithDeduction,
+                maxLoanByPriceLimit: maxLoanByPriceLimit, maxLoanByLtvIn억원: commMaxLoanByLtv,
+                appliedLtvPercent: commLtvPercent, dsrLimit: dsrLimit, allowedTerms: allowedTermsArray,
+                reason: `선택하신 주택 소유 유무별 가이드라인 및 금융위원회 총부채원리금상환비율(DSR) 한도를 준수한 금융권 대출 결과입니다.`,
+                annualRepayment: calcAnnualRepayment(finalLimitWithDeduction * 100000000, pRate, currentTerm)
+            });
+        }
+
+        surveyData.calculated.validProductsList = validProducts;
+        renderProductsUI(currentTerm);
+    }
+
+    // 파일 로드 시 바로 연산 실행
+    runAnalysis();
+</script>
+</body>
+</html>
