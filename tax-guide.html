@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장기주택저당차입금 이자상환액 소득공제 가이드</title>
+    <style>
+        /* 국세청 홈택스 및 정부24 연말정산 안내서 스타일의 신뢰감 있는 화이트/네이비 디자인 */
+        :root {
+            --bg-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-main: #222222;
+            --text-desc: #555555;
+            --border-color: #cccccc;
+            --point-blue: #1e3a8a;
+            --point-blue-light: #eff6ff;
+            --point-blue-border: #bfdbfe;
+            --point-sky: #3b82f6;
+            --table-header: #f8fafc;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --warning-bg: #fef2f2;
+            --warning-border: #fca5a5;
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .notion-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 메인 타이틀 */
+        .main-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--point-blue);
+            line-height: 1.4;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--point-blue);
+            padding-bottom: 15px;
+        }
+
+        /* 상단 경고/안내 박스 */
+        .intro-box {
+            background-color: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-left: 4px solid var(--accent-orange);
+            padding: 16px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            font-size: 14.5px;
+        }
+
+        /* 대단원 섹션 */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--point-blue);
+            margin: 36px 0 14px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sub-section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--point-sky);
+            margin: 20px 0 8px 0;
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--text-main);
+            margin-bottom: 14px;
+        }
+
+        .bold-text {
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        /* 3대 조건 카드 블록 */
+        .condition-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+
+        .condition-num {
+            display: inline-block;
+            background-color: var(--point-blue);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .condition-title {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .condition-desc {
+            font-size: 14px;
+            color: var(--text-desc);
+            padding-left: 4px;
+        }
+
+        /* 명의 판정 매칭 박스 */
+        .case-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+            background-color: #ffffff;
+            border: 1px dashed #cbd5e1;
+            padding: 14px;
+        }
+
+        .badge-ox {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 3px;
+            margin-right: 4px;
+        }
+        .badge-ox.no { background-color: var(--accent-red); }
+        .badge-ox.yes { background-color: var(--success-color); }
+
+        /* 수식 계산 수치 영역 */
+        .math-block {
+            background-color: var(--point-blue-light);
+            border: 1px solid var(--point-blue-border);
+            padding: 12px;
+            font-size: 13.5px;
+            text-align: center;
+            margin: 14px 0;
+            color: var(--point-blue);
+            font-weight: 600;
+        }
+
+        /* 데이터 테이블 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13.5px;
+            text-align: center;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 8px;
+        }
+
+        .data-table th {
+            background-color: var(--table-header);
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .data-table td:first-child {
+            background-color: #fbfbfb;
+            font-weight: 600;
+        }
+
+        /* 🚨 주의사항 섹션 */
+        .warning-section {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-left: 4px solid var(--accent-red);
+            padding: 18px;
+            margin-top: 32px;
+            border-radius: 4px;
+        }
+
+        .warning-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-red);
+            margin-bottom: 10px;
+        }
+
+        .warning-list {
+            list-style: none;
+            font-size: 13.5px;
+            color: #2d3748;
+        }
+
+        .warning-list li {
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+        .warning-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .warning-list li::before {
+            content: "•";
+            position: absolute;
+            left: 2px;
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        /* 하단 카피 및 안내 */
+        .footer-info {
+            font-size: 13px;
+            color: var(--text-desc);
+            background-color: #edf2f7;
+            padding: 14px;
+            line-height: 1.6;
+            margin-top: 32px;
+            text-align: center;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="notion-container">
+    <!-- 메인 타이틀 -->
+    <h1 class="main-title">💡 장기주택저당차입금 이자상환액 소득공제 가이드</h1>
+
+    <!-- 상단 인트로 알림 -->
+    <div class="intro-box">
+        <p style="margin-bottom: 6px; font-weight: 700; color: var(--accent-orange);">⚠️ 모르면 매년 수 백만 원씩 생돈 날리는 주담대 환급금!</p>
+        <p style="font-size: 14px; color: #4a5568; margin-bottom: 0;">
+            주택담보대출 이자 부담 때문에 매달 가계가 부담스러우시다면 이 제도를 무조건 체크하셔야 합니다. 정부가 합법적으로 지출한 이자 비용을 환급해 주는 <span class="bold-text">'장기주택저당차입금 이자상환액 소득공제'</span>!<br>
+            <b>최대 2,000만 원 한도</b>로 소득공제를 지원하므로 연말정산 세액 부담을 덜고 든든한 13월의 월급을 확보할 수 있습니다. 단, 아래 3대 필수 조건을 완벽히 만족해야 합니다.
+        </p>
+    </div>
+
+    <!-- 섹션 1 -->
+    <h2 class="section-title">💡 주담대 이자 환급 3대 필수 조건</h2>
+
+    <!-- 조건 1 -->
+    <div class="condition-card">
+        <span class="condition-num">조건 1</span>
+        <div class="condition-title">취득 당시 '기준시가 6억 원 이하' 주택 (★가장 중요)</div>
+        <div class="condition-desc">
+            실거래가(매매가) 기준이 아닌 국토교통부 고시 <b>‘공시가격(기준시가)’</b> 기준입니다. 실거래 매매가격이 9억 원이라 하더라도 취득 당시 공시가격이 6억 원 이하라면 세제 혜택 대상에 포함됩니다. (※ 동·호수별 상이하므로 필수 확인)<br>
+            <span style="font-size: 12.5px; color: var(--point-sky); display:block; margin-top:4px;">➔ 부동산공시가격알리미 사이트(https://www.realtyprice.kr/)에서 조회 가능</span>
+            <span style="font-size: 13px; color: #4a5568; display:block; margin-top:4px;">※ 구매 시점에 6억 이하였다면 차후 주택 가격이 상승해도 무방하며, 주거용 오피스텔(아파텔) 등은 대상에서 제외됩니다.</span>
+        </div>
+    </div>
+
+    <!-- 조건 2 -->
+    <div class="condition-card">
+        <span class="condition-num">조건 2</span>
+        <div class="condition-title">'무주택자' 또는 '1주택자' (세대주 중심)</div>
+        <div class="condition-desc">
+            해당 과세기간 종료일(12월 31일 연말 기준) 현재, 세대주가 주택을 보유하지 않았거나 상속·매매 등을 포함해 1가구 1주택 상태여야 정상 공제됩니다.
+        </div>
+    </div>
+
+    <!-- 조건 3 -->
+    <div class="condition-card">
+        <span class="condition-num">조건 3</span>
+        <div class="condition-title">'집 명의'와 '대출 명의'의 완벽한 일치</div>
+        <div class="condition-desc">
+            이 조건을 간과하여 연말정산 시 환급금 처리가 누락되는 사례가 대단히 많습니다. 명의 일치 여부를 엄격히 심사합니다.
+            
+            <div class="case-box">
+                <div style="font-size: 13.5px;"><span class="badge-ox no">❌ 공제 불가능</span> 집 명의는 <b>남편</b> 명의 / 대출 실행은 소득이 더 높은 <b>아내</b> 단독 명의 ➔ 명의 불일치로 세제 혜택 <b>0원</b></div>
+                <div style="font-size: 13.5px;"><span class="badge-ox yes">⭕ 공제 가능</span> 부부 <b>공동 명의</b>로 주택 취득 / 대출은 남편(또는 아내) <b>단독 명의</b>로 실행 ➔ <b>전액 소득공제 가능</b></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 섹션 2 -->
+    <h2 class="section-title">📊 장기주택저당차입금 이자상환액 소득공제 한도</h2>
+    <p>
+        <b>※ 비거치식 분할상환 요건:</b> 거치기간 없이 첫 달부터 원금 분할상환이 진행되거나, 차입일이 속하는 과세기간의 다음 연도부터 매년 이자상환액과 원금상환액 합계가 <b>차입금 총액의 70% 이상</b> 상환 구도를 충족하는 구조를 의미합니다.
+    </p>
+
+    <div class="math-block">
+        📐 예시: 6억 원을 30년 만기로 빌린 경우<br>
+        (6억 원 × 70%) ÷ 30년 = 연간 최소 1,400만 원 이상 상환 시 요건 충족
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>상환 기간</th>
+                <th>금리 및 상환 방식 조건</th>
+                <th>연간 소득공제 한도</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="3">15년 이상</td>
+                <td style="text-align: left; padding-left: 12px;">✔️ 고정금리 <b>and</b> 비거치식 분할상환</td>
+                <td style="font-weight: 700; color: var(--point-blue);">연 2,000만 원</td>
+            </tr>
+            <tr>
+                <td style="text-align: left; padding-left: 12px;">✔️ 고정금리 <b>or</b> 비거치식 분할상환 (택 1)</td>
+                <td>연 1,800만 원</td>
+            </tr>
+            <tr>
+                <td style="text-align: left; padding-left: 12px;">❌ 기타 방식 (변동금리 + 거치식 결합 등)</td>
+                <td style="color: var(--accent-orange);">연 800만 원</td>
+            </tr>
+            <tr>
+                <td>10년 이상 ~ 15년 미만</td>
+                <td style="text-align: left; padding-left: 12px;">✔️ 고정금리 <b>or</b> 비거치식 분할상환 (택 1)</td>
+                <td>연 600만 원</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 🚨 주의사항 -->
+    <div class="warning-section">
+        <div class="warning-title">🚨 주담대 소득공제 신청 전 필수 체크리스트</div>
+        <ul class="warning-list">
+            <li><b>차입 기간 요건:</b> 상환 스케줄 대출 기간이 최소 10년 이상으로 설정되어 있어야만 법정 공제 대상이 됩니다.</li>
+            <li><b>등기일 기준 시차 엄수:</b> 주택 소유권 이전 등기 또는 보존등기 접수일로부터 <b>반드시 3개월 이내에 차입(대출 실행)</b>이 완료되어야 혜택 규격에 부합합니다.</li>
+            <li><b>차입 대상 한정:</b> 근로소득이 발생하는 직장인(근로소득자) 가구에 한해 연말정산 시 최종 소득공제 혜택이 적용됩니다.</li>
+        </ul>
+    </div>
+
+    <!-- 하단 풋터 -->
+    <div class="footer-info">
+        🏠 매달 지출되는 고정 대출 이자 비용, 서류 요건 정비를 통해 합법적인 세액 환급 재원으로 변환해 보세요.<br>
+        <span style="font-size: 11px; color: #718096; display: block; margin-top: 4px;">※ 개인별 과세 표준 구간 및 정부의 차기 세법 개정안 시행 시기에 따라 세부 세제 공제율과 한도는 상이할 수 있으므로 실행 전 국세청 가이드를 상시 교차 검증해 주세요.</span>
+    </div>
+</div>
+
+</body>
+</html>
