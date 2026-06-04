@@ -315,9 +315,10 @@
         <div class="form-section">
             <div class="question-title">정부 공시가격 / 시가표준액</div>
             <div class="input-wrapper">
-                <input type="number" id="officialPrice" class="styled-input" placeholder="예: 5.5" step="0.01" required>
+                <input type="number" id="officialPrice" class="styled-input" placeholder="예: 5.5" step="0.01">
                 <span class="input-unit">억원 (공시가)</span>
             </div>
+            <div class="question-desc" style="margin-top: 6px; margin-bottom: 0;">("부동산공시가격알리미" 확인, 공란으로 두시면 매매가의 60%로 계산됩니다.)</div>
         </div>
     </div>
 
@@ -416,7 +417,6 @@
     <div class="form-row">
         <div class="form-section">
             <div class="question-title">리모델링 비용</div>
-            <div class="question-desc">※ 만원 단위로 입력해주세요. (예: 500 입력 시 500만원)</div>
             <div class="input-wrapper">
                 <input type="number" id="costInterior" class="styled-input" placeholder="예: 500 (500만원)" value="0">
                 <span class="input-unit">만원</span>
@@ -424,7 +424,6 @@
         </div>
         <div class="form-section">
             <div class="question-title">가전 구입 비용</div>
-            <div class="question-desc">※ 만원 단위로 입력해주세요. (예: 500 입력 시 500만원)</div>
             <div class="input-wrapper">
                 <input type="number" id="costHomeApp" class="styled-input" placeholder="예: 500 (500만원)" value="0">
                 <span class="input-unit">만원</span>
@@ -435,7 +434,6 @@
     <div class="form-row">
         <div class="form-section">
             <div class="question-title">가구 구입 비용</div>
-            <div class="question-desc">※ 만원 단위로 입력해주세요. (예: 500 입력 시 500만원)</div>
             <div class="input-wrapper">
                 <input type="number" id="costFurniture" class="styled-input" placeholder="예: 500 (500만원)" value="0">
                 <span class="input-unit">만원</span>
@@ -443,7 +441,6 @@
         </div>
         <div class="form-section">
             <div class="question-title">이사 비용</div>
-            <div class="question-desc">※ 만원 단위로 입력해주세요. (예: 500 입력 시 500만원)</div>
             <div class="input-wrapper">
                 <input type="number" id="costMoving" class="styled-input" placeholder="예: 500 (500만원)" value="0">
                 <span class="input-unit">만원</span>
@@ -475,7 +472,7 @@
 
             <div class="result-section-title">B. 부동산 취득 필수 부대비용</div>
             <div class="result-item">
-                <span>1. 부동산 중개보수 <span style="font-size:11px; color:var(--text-desc);">(VAT 10% 포함)</span></span>
+                <span>1. 부동산 중개보수 <span style="font-size:11px; color:var(--text-desc);">(VAT 10% 공식 포함)</span></span>
                 <span id="resBrokerFee" style="font-weight: 600;">0 원</span>
             </div>
             <div class="sub-item" id="resBrokerFeeSub">중개수수료 원금: 0 원 + 부가세: 0 원</div>
@@ -528,16 +525,21 @@
 function calculateExpenses() {
     // 1. 값 가져오기 (억원 단위를 원 단위로 환산 처리 - Math.round로 부동소수점 오차 차단)
     const inputPurchasePrice = parseFloat(document.getElementById('purchasePrice').value);
-    const inputOfficialPrice = parseFloat(document.getElementById('officialPrice').value);
+    let inputOfficialPrice = parseFloat(document.getElementById('officialPrice').value);
+    
+    if (isNaN(inputPurchasePrice)) {
+        alert("기본 주택 정보(매매가)에 올바른 숫자를 입력해주세요.");
+        return;
+    }
+
+    // 공시가격이 공란(NaN)인 경우 매매 가격의 60%로 자동 계산
+    if (isNaN(inputOfficialPrice)) {
+        inputOfficialPrice = inputPurchasePrice * 0.6;
+    }
     
     // 라디오 버튼 선택값에 따라 exclusiveArea 매핑 (이하=85, 초과=86)
     const areaRange = document.querySelector('input[name="exclusiveAreaRange"]:checked').value;
     const exclusiveArea = areaRange === '85_under' ? 85 : 86;
-    
-    if (isNaN(inputPurchasePrice) || isNaN(inputOfficialPrice)) {
-        alert("기본 주택 정보(매매가, 공시가)에 올바른 숫자를 입력해주세요.");
-        return;
-    }
 
     // 내부 계산을 위해 억원 단위를 원 단위 정수로 변경
     const purchasePrice = Math.round(inputPurchasePrice * 100000000);
